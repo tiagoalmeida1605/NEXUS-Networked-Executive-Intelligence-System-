@@ -2,15 +2,20 @@
 core/response.py
 
 Responsável por padronizar as respostas geradas pelos comandos e exibi-las
-no terminal de forma elegante, utilizando a biblioteca rich.
+no terminal com a identidade visual do NEXUS.
 
-Nenhum outro módulo deve imprimir diretamente no terminal:
-toda saída de texto para o usuário passa por este módulo.
+Um comando pode retornar apenas uma `mensagem` de texto (para confirmações
+rápidas, como "Abrindo Brave...") ou também um `renderable` Rich (Panel,
+Table, Columns...) para saídas mais elaboradas, como os painéis de
+CPU/RAM/disco. Nenhum outro módulo deve imprimir diretamente no terminal —
+toda saída passa por aqui, o que preserva compatibilidade: comandos antigos
+que só definem `mensagem` continuam funcionando exatamente como antes.
 """
 
 from dataclasses import dataclass
+from typing import Optional
 
-from rich.console import Console
+from rich.console import Console, RenderableType
 
 console = Console()
 
@@ -22,28 +27,33 @@ class Resposta:
 
     Attributes:
         sucesso: indica se o comando foi executado com êxito.
-        mensagem: texto a ser exibido ao usuário (pode ter múltiplas linhas).
-        encerrar: quando True, sinaliza ao loop principal que o NEXUS deve
-            ser encerrado após esta resposta ser exibida.
+        mensagem: texto simples para confirmações rápidas e para o
+            fallback textual quando não há `renderable`.
+        renderable: componente Rich opcional (Panel, Table, Columns...)
+            usado para saídas mais elaboradas.
+        encerrar: quando True, sinaliza ao loop principal que o NEXUS
+            deve ser encerrado após esta resposta ser exibida.
     """
 
     sucesso: bool
-    mensagem: str
+    mensagem: str = ""
+    renderable: Optional[RenderableType] = None
     encerrar: bool = False
 
 
 def exibir(resposta: Resposta) -> None:
-    """
-    Exibe uma Resposta no terminal, no padrão visual do NEXUS.
+    """Exibe uma Resposta no terminal, seguindo a identidade visual do NEXUS."""
+    if resposta.renderable is not None:
+        console.print(resposta.renderable)
+        console.print()
+        return
 
-    Args:
-        resposta: objeto Resposta a ser exibido.
-    """
     if not resposta.mensagem:
         return
 
-    cor = "cyan" if resposta.sucesso else "red"
-    console.print(f"[bold {cor}][NEXUS][/bold {cor}]")
-    for linha in resposta.mensagem.split("\n"):
-        console.print(linha)
+    icone = "[bold green]✔[/bold green]" if resposta.sucesso else "[bold red]✗[/bold red]"
+    linhas = resposta.mensagem.split("\n")
+    console.print(f"{icone} {linhas[0]}")
+    for linha in linhas[1:]:
+        console.print(f"   {linha}")
     console.print()

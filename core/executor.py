@@ -9,7 +9,10 @@ O executor não implementa lógica de negócio própria — apenas roteia.
 
 from typing import Any, Callable, Dict
 
+from rich.columns import Columns
+
 from commands import apps, browser, info, system
+from core import ui
 from core.parser import Comando
 from core.response import Resposta
 
@@ -68,31 +71,39 @@ class Executor:
 
     @staticmethod
     def _ajuda() -> Resposta:
-        """Monta a mensagem de ajuda com todos os comandos disponíveis."""
-        texto = (
-            "Comandos disponíveis:\n"
-            "\n"
-            "  ajuda             exibe esta lista de comandos\n"
-            "  hora              exibe a hora atual\n"
-            "  data              exibe a data atual\n"
-            "  cpu               exibe o uso da CPU\n"
-            "  ram               exibe o uso da memória RAM\n"
-            "  disco             exibe o uso do disco\n"
-            "  sistema           exibe informações do sistema operacional\n"
-            "  limpar            limpa a tela\n"
-            "  sair              encerra o NEXUS\n"
-            "\n"
-            "  abrir brave       abre o navegador Brave\n"
-            "  abrir firefox     abre o navegador Firefox\n"
-            "  abrir terminal    abre o terminal\n"
-            "  abrir pycharm     abre o PyCharm\n"
-            "  abrir webstorm    abre o WebStorm\n"
-            "  abrir vscode      abre o VSCode\n"
-            "  abrir downloads   abre a pasta Downloads\n"
-            "  abrir documentos  abre a pasta Documentos\n"
-            "\n"
-            "  google            abre o Google\n"
-            "  youtube           abre o YouTube\n"
-            "  github            abre o GitHub"
+        """Monta os painéis de ajuda com todos os comandos disponíveis."""
+        comandos_sistema = [
+            ("ajuda", "Exibe esta lista de comandos"),
+            ("hora", "Exibe a hora atual"),
+            ("data", "Exibe a data atual"),
+            ("cpu", "Exibe o uso da CPU"),
+            ("ram", "Exibe o uso da memória RAM"),
+            ("disco", "Exibe o uso do disco"),
+            ("sistema", "Exibe informações do sistema operacional"),
+            ("limpar", "Limpa a tela"),
+            ("sair", "Encerra o NEXUS"),
+        ]
+
+        comandos_apps = [
+            ("abrir brave", "Abre o navegador Brave"),
+            ("abrir firefox", "Abre o navegador Firefox"),
+            ("abrir terminal", "Abre o terminal"),
+            ("abrir pycharm", "Abre o PyCharm"),
+            ("abrir webstorm", "Abre o WebStorm"),
+            ("abrir vscode", "Abre o VSCode"),
+            ("abrir downloads", "Abre a pasta Downloads"),
+            ("abrir documentos", "Abre a pasta Documentos"),
+            ("google", "Abre o Google"),
+            ("youtube", "Abre o YouTube"),
+            ("github", "Abre o GitHub"),
+        ]
+
+        tabela_sistema = ui.tabela(
+            "Sistema", ["Comando", "Descrição"], comandos_sistema, cor=ui.COR_PRIMARIA
         )
-        return Resposta(sucesso=True, mensagem=texto)
+        tabela_apps = ui.tabela(
+            "Aplicativos & Sites", ["Comando", "Descrição"], comandos_apps, cor=ui.COR_ACENTO
+        )
+
+        colunas = Columns([tabela_sistema, tabela_apps], equal=False, expand=False)
+        return Resposta(sucesso=True, mensagem="Comandos disponíveis.", renderable=colunas)

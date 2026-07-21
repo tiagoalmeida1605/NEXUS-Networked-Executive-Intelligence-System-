@@ -19,6 +19,7 @@ from typing import Any, Dict
 
 from rich.console import Console
 
+from core import ui
 from core.banner import exibir_banner
 from core.executor import Executor
 from core.parser import Parser
@@ -58,11 +59,11 @@ def main() -> None:
     parser = Parser()
     executor = Executor(config)
 
-    exibir_banner()
+    exibir_banner(config)
 
     while True:
         try:
-            entrada = console.input("[bold cyan]>[/bold cyan] ")
+            entrada = console.input(ui.PROMPT)
         except (KeyboardInterrupt, EOFError):
             console.print("\n[bold cyan][NEXUS][/bold cyan] Encerrando NEXUS...")
             break

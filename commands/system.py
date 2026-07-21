@@ -3,57 +3,116 @@ commands/system.py
 
 Responsável pelos comandos que consultam ou controlam o sistema
 operacional: uso de CPU, RAM, disco, informações gerais e limpeza de tela.
+
+As saídas são montadas como painéis Rich através de core/ui.py.
 """
 
 import os
 import platform
+import sys
+from typing import Optional
 
 import psutil
 
+from core import ui
 from core.response import Resposta
 
 
 def cpu() -> Resposta:
-    """Retorna o percentual de uso atual da CPU."""
+    """Retorna um painel com o uso atual da CPU."""
     uso = psutil.cpu_percent(interval=0.5)
-    return Resposta(sucesso=True, mensagem=f"Uso de CPU: {uso}%")
+    nucleos = psutil.cpu_count(logical=True) or 0
+
+    conteudo = [
+        f"Uso: {ui.barra_progresso(uso)}",
+        f"Núcleos: {nucleos}",
+    ]
+
+    temperatura = _temperatura_cpu()
+    if temperatura is not None:
+        conteudo.append(f"Temperatura: {temperatura:.0f}°C")
+
+    painel = ui.painel("CPU", conteudo, cor=ui.COR_PRIMARIA)
+    return Resposta(sucesso=True, mensagem=f"Uso de CPU: {uso}%", renderable=painel)
 
 
 def ram() -> Resposta:
-    """Retorna o percentual e a quantidade de memória RAM em uso."""
+    """Retorna um painel com o uso atual de memória RAM."""
     memoria = psutil.virtual_memory()
     usado_mb = memoria.used // (1024 ** 2)
     total_mb = memoria.total // (1024 ** 2)
+
+    conteudo = [
+        f"Uso: {ui.barra_progresso(memoria.percent)}",
+        f"{usado_mb} MB / {total_mb} MB",
+    ]
+
+    painel = ui.painel("RAM", conteudo, cor=ui.COR_PRIMARIA)
     return Resposta(
         sucesso=True,
         mensagem=f"Memória RAM: {memoria.percent}% utilizada ({usado_mb} MB / {total_mb} MB)",
+        renderable=painel,
     )
 
 
 def disco() -> Resposta:
-    """Retorna o percentual e a quantidade de espaço em disco em uso."""
+    """Retorna um painel com o uso atual de disco."""
     uso = psutil.disk_usage("/")
     usado_gb = uso.used // (1024 ** 3)
     total_gb = uso.total // (1024 ** 3)
+
+    conteudo = [
+        f"Uso: {ui.barra_progresso(uso.percent)}",
+        f"{usado_gb} GB / {total_gb} GB",
+    ]
+
+    painel = ui.painel("Disco", conteudo, cor=ui.COR_PRIMARIA)
     return Resposta(
         sucesso=True,
         mensagem=f"Disco: {uso.percent}% utilizado ({usado_gb} GB / {total_gb} GB)",
+        renderable=painel,
     )
 
 
 def sistema() -> Resposta:
-    """Retorna informações gerais sobre o sistema operacional."""
-    info = (
-        f"Sistema: {platform.system()}\n"
-        f"Versão: {platform.version()}\n"
-        f"Distribuição: {platform.platform()}\n"
-        f"Arquitetura: {platform.machine()}\n"
-        f"Processador: {platform.processor() or 'Não identificado'}"
-    )
-    return Resposta(sucesso=True, mensagem=info)
+    """Retorna um painel com informações gerais do sistema operacional."""
+    distro = ui.detectar_distro()
+
+    conteudo = [
+        distro,
+        f"Kernel {platform.release()}",
+        f"Python {sys.version.split()[0]}",
+        f"Arquitetura: {platform.machine()}",
+    ]
+
+    painel = ui.painel("Sistema", conteudo, cor=ui.COR_ACENTO)
+    return Resposta(sucesso=True, mensagem=f"Sistema: {distro}", renderable=painel)
 
 
 def limpar() -> Resposta:
     """Limpa a tela do terminal."""
     os.system("cls" if platform.system() == "Windows" else "clear")
     return Resposta(sucesso=True, mensagem="")
+
+
+def _temperatura_cpu() -> Optional[float]:
+    """
+    Tenta ler a temperatura atual da CPU via psutil.
+
+    Retorna None quando a plataforma não expõe sensores de temperatura
+    (comum fora do Linux, ou em ambientes virtualizados/contêineres).
+    """
+    leitor = getattr(psutil, "sensors_temperatures", None)
+    if leitor is None:
+        return None
+
+    try:
+        sensores = leitor()
+    except Exception:  # noqa: BLE001
+        return None
+
+    for leituras in sensores.values():
+        for leitura in leituras:
+            if leitura.current:
+                return leitura.current
+    return None

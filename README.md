@@ -1,25 +1,23 @@
 # NEXUS — Networked Executive Intelligence System
 
-**Versão atual: v0.1 Alpha — Codename: Boot**
+**Versão atual: v0.1.5 Alpha — Codename: Launch**
 
 ## Descrição
 
-NEXUS é um assistente pessoal para Linux, executado via terminal, criado para
-evoluir ao longo do tempo em uma arquitetura modular. Nesta primeira versão,
-o NEXUS interpreta comandos digitados pelo usuário, executa ações no sistema
-operacional (abrir aplicativos, pastas e sites, consultar informações do
-sistema) e responde de forma elegante utilizando a biblioteca `rich`.
+NEXUS é um assistente pessoal para Linux, executado via terminal, com uma
+interface CLI moderna construída inteiramente com [Rich](https://github.com/Textualize/rich):
+painéis arredondados, tabelas, barras de progresso coloridas, animação de
+inicialização e um prompt personalizado. O objetivo desta versão é
+transformar a base do v0.1 em um aplicativo realmente agradável de usar —
+sem ainda introduzir IA, interface gráfica, voz, plugins ou automações
+complexas.
 
 ## Objetivo
 
-Construir uma base sólida, limpa e escalável para um assistente pessoal,
-sem qualquer forma de IA, interface gráfica, reconhecimento de voz ou
-automações complexas nesta versão. O foco do v0.1 Alpha é exclusivamente:
-
-- Estrutura modular bem definida;
-- Separação clara de responsabilidades (parser, executor, comandos);
-- Configuração externa, sem caminhos fixos no código;
-- Comandos básicos de terminal.
+- Elevar a experiência de terminal a um padrão profissional (inspirado em
+  ferramentas como lazygit, btop, fastfetch e gh CLI);
+- Instalação global, para rodar `nexus` em qualquer diretório;
+- Manter a arquitetura modular e 100% compatível com o v0.1 Alpha.
 
 ## Instalação
 
@@ -29,16 +27,41 @@ cd NEXUS-Networked-Executive-Intelligence-System-
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python3 nexus.py
 ```
+
+## Instalação Global
+
+Para poder digitar apenas `nexus` em qualquer diretório do Linux Mint:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+O `install.sh`:
+1. Verifica se o Python 3 está instalado;
+2. Instala as dependências (`rich`, `psutil`);
+3. Cria o comando global `nexus` em `~/.local/bin/nexus`;
+4. Cria um launcher `.desktop` no menu de aplicativos do Linux Mint.
+
+Para remover a instalação global (sem apagar os arquivos do projeto):
+
+```bash
+chmod +x uninstall.sh
+./uninstall.sh
+```
+
+> Os scripts não movem o projeto — o comando global aponta para a pasta
+> onde o `install.sh` foi executado, então mantenha-a no lugar.
 
 ## Dependências
 
-- [rich](https://github.com/Textualize/rich) — interface de terminal
+- [rich](https://github.com/Textualize/rich) — toda a interface de terminal (painéis, tabelas, regras, animações)
 - [psutil](https://github.com/giampaolo/psutil) — informações de CPU, RAM e disco
 
-As demais bibliotecas utilizadas (`platform`, `datetime`, `os`, `subprocess`,
-`json`, `pathlib`, `webbrowser`) fazem parte da biblioteca padrão do Python 3
-e não exigem instalação.
+As demais bibliotecas (`platform`, `datetime`, `os`, `subprocess`, `json`,
+`pathlib`, `webbrowser`, `sys`) fazem parte da biblioteca padrão do Python 3.
 
 ## Estrutura do projeto
 
@@ -48,48 +71,44 @@ Nexus/
 ├── nexus.py
 │
 ├── core/
-│   ├── banner.py
-│   ├── parser.py
-│   ├── executor.py
-│   └── response.py
+│   ├── banner.py       → animação de boot + banner principal
+│   ├── parser.py       → interpreta a entrada do usuário
+│   ├── executor.py     → encaminha comandos para commands/
+│   ├── response.py     → padroniza e exibe as respostas
+│   └── ui.py           → identidade visual: painéis, tabelas, barras, cores
 │
 ├── commands/
-│   ├── system.py
-│   ├── info.py
-│   ├── apps.py
-│   └── browser.py
+│   ├── system.py       → CPU, RAM, disco, sistema, limpar
+│   ├── info.py         → hora, data
+│   ├── apps.py         → abertura de aplicativos e pastas
+│   └── browser.py      → abertura de sites
 │
 ├── config/
 │   └── config.json
 │
 ├── assets/
 │
+├── install.sh          → instalação global (comando "nexus" + launcher)
+├── uninstall.sh        → remove a instalação global
 ├── requirements.txt
-│
 └── README.md
 ```
 
-- **core/banner.py** — exibe a tela inicial do sistema.
-- **core/parser.py** — interpreta a entrada do usuário (ação + alvo). Nunca executa nada.
-- **core/executor.py** — encaminha os comandos interpretados ao módulo correto.
-- **core/response.py** — padroniza e exibe as respostas do sistema.
-- **commands/system.py** — comandos de CPU, RAM, disco, informações do SO e limpeza de tela.
-- **commands/info.py** — comandos de hora e data.
-- **commands/apps.py** — abertura de aplicativos e pastas configurados em `config.json`.
-- **commands/browser.py** — abertura de sites (Google, YouTube, GitHub).
-- **config/config.json** — configurações do usuário (navegador, editor, terminal, pastas).
+`core/ui.py` é a única fonte de painéis, tabelas e cores do sistema — nenhum
+outro módulo monta componentes Rich diretamente, o que mantém uma
+identidade visual única em todo o NEXUS.
 
 ## Comandos
 
 | Comando            | Descrição                              |
 |--------------------|-----------------------------------------|
-| `ajuda`            | Exibe a lista de comandos               |
+| `ajuda`            | Exibe as tabelas de comandos            |
 | `hora`             | Exibe a hora atual                      |
 | `data`             | Exibe a data atual                      |
-| `cpu`              | Exibe o uso da CPU                      |
-| `ram`              | Exibe o uso da memória RAM              |
-| `disco`            | Exibe o uso do disco                    |
-| `sistema`          | Exibe informações do sistema operacional|
+| `cpu`              | Painel de uso da CPU (com barra e núcleos)|
+| `ram`              | Painel de uso da memória RAM            |
+| `disco`            | Painel de uso do disco                  |
+| `sistema`          | Painel com distribuição, kernel e Python|
 | `limpar`           | Limpa a tela                            |
 | `sair`             | Encerra o NEXUS                         |
 | `abrir brave`      | Abre o navegador Brave                  |
@@ -110,33 +129,45 @@ Nexus/
 python3 nexus.py
 ```
 
+ou, após a instalação global:
+
+```bash
+nexus
+```
+
 Antes de executar, ajuste `config/config.json` com os comandos e caminhos
 reais do seu sistema (usuário, navegador, terminal, editor e pastas).
 
 ## Roadmap
 
 **NEXUS v0.1 Alpha — Codename: Boot**
-- ✔ Base do sistema
+- ✔ Estrutura inicial
 - ✔ Parser
 - ✔ Executor
 - ✔ Comandos básicos
 
 ---
 
+**NEXUS v0.1.5 Alpha — Codename: Launch**
+- ✔ Instalação global (`install.sh` / `uninstall.sh`)
+- ✔ Terminal profissional (`core/ui.py`)
+- ✔ Interface CLI moderna (painéis, tabelas, prompt personalizado)
+- ✔ Melhor experiência visual (animação de boot, barras de progresso)
+
+---
+
 **NEXUS v0.2 Alpha — Codename: Kernel** *(planejado)*
 - Histórico de comandos
-- Arquivo de configuração expandido
-- Sistema de aliases
-- Melhor tratamento de erros
 - Logs
+- Sistema de aliases
+- Parser aprimorado
 
 ---
 
 **NEXUS v0.5 Beta — Codename: Core** *(planejado)*
-- Arquitetura de módulos
+- Sistema modular completo
 - Primeiras automações
 - Configuração dinâmica
-- Melhor parser
 
 ---
 
@@ -150,18 +181,10 @@ reais do seu sistema (usuário, navegador, terminal, editor e pastas).
 **Versões futuras**
 
 A arquitetura foi pensada para receber, sem necessidade de reescrever a base
-do projeto:
-- Reconhecimento de voz
-- Resposta por voz
-- HUD futurista
-- Interface gráfica
-- IA
-- Sistema de plugins
-- Sistema de automações
-- Aplicativo para celular
-- Integração Desktop + Mobile
+do projeto: reconhecimento de voz, resposta por voz, HUD futurista,
+interface gráfica, IA, sistema de plugins, sistema de automações, aplicativo
+para celular e integração Desktop + Mobile.
 
 ## Licença
 
 Este projeto está licenciado sob os termos da licença MIT.
-# NEXUS-Networked-Executive-Intelligence-System-
