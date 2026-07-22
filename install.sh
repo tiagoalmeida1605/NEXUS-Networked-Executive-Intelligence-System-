@@ -84,6 +84,18 @@ python -m pip install -r "$PROJETO_DIR/requirements.txt"
 echo "✔ Dependências instaladas."
 echo ""
 
+echo "→ Preparando configuração em ~/.config/nexus/..."
+mkdir -p "$HOME/.config/nexus/logs"
+mkdir -p "$HOME/.config/nexus/history"
+mkdir -p "$HOME/.config/nexus/cache"
+if [ ! -f "$HOME/.config/nexus/config.json" ] && [ -f "$PROJETO_DIR/config/config.json" ]; then
+    cp "$PROJETO_DIR/config/config.json" "$HOME/.config/nexus/config.json"
+    echo "✔ config.json criado a partir do template."
+else
+    echo "✔ Estrutura de configuração pronta."
+fi
+echo ""
+
 echo "→ Criando comando global 'nexus'..."
 
 mkdir -p "$BIN_DIR"

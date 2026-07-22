@@ -1,1 +1,5 @@
-"""Pacote commands do NEXUS - contém os módulos de comandos (system, info, apps, browser)."""
+"""Pacote commands do NEXUS — comandos de usuário.
+
+Módulos:
+    system, info, apps, browser, history_cmd, update_cmd
+"""

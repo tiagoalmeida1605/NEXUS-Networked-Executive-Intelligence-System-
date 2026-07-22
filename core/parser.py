@@ -8,6 +8,8 @@ O parser NUNCA executa nada — apenas interpreta.
 Quem executa é o core/executor.py.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Optional
 
@@ -26,6 +28,10 @@ class Comando:
     acao: str
     alvo: Optional[str] = None
     bruto: str = ""
+
+
+# Comandos que aceitam um alvo/subcomando opcional
+_ACOES_COM_ALVO = frozenset({"abrir", "history", "historico"})
 
 
 class Parser:
@@ -54,7 +60,8 @@ class Parser:
         acao = partes[0]
         alvo = partes[1].strip() if len(partes) > 1 else None
 
-        if acao == "abrir" and alvo:
-            return Comando(acao="abrir", alvo=alvo, bruto=entrada)
+        if acao in _ACOES_COM_ALVO:
+            return Comando(acao=acao, alvo=alvo, bruto=entrada)
 
+        # Mantém frases inteiras para comandos simples ("abrir downloads" já tratado)
         return Comando(acao=texto, alvo=None, bruto=entrada)

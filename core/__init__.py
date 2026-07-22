@@ -1,1 +1,6 @@
-"""Pacote core do NEXUS - contém a base do sistema (banner, parser, executor e response)."""
+"""Pacote core do NEXUS — núcleo do sistema.
+
+Módulos:
+    banner, parser, executor, response, ui,
+    config, logger, history, update
+"""

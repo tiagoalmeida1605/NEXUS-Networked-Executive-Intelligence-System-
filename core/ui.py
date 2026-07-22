@@ -5,8 +5,15 @@ Camada de apresentação do NEXUS. Concentra toda a identidade visual do
 projeto — cores, painéis, tabelas, regras e barras de progresso — para
 que os demais módulos nunca precisem montar componentes Rich diretamente.
 
-Isso garante uma identidade visual única e consistente em todo o sistema.
+Paleta oficial (tons de azul tecnológico):
+    Azul principal .... #00A8FF
+    Azul tecnológico .. #0077FF
+    Azul escuro ....... #001B44
+    Azul neon ......... #00FFFF
+    Branco ............ #E8F4FF
 """
+
+from __future__ import annotations
 
 import platform
 from typing import Iterable, Sequence
@@ -18,16 +25,26 @@ from rich.table import Table
 
 console = Console()
 
-# Paleta de cores da identidade visual do NEXUS
-COR_PRIMARIA = "bright_cyan"
-COR_ACENTO = "magenta"
-COR_SUCESSO = "green"
-COR_ERRO = "red"
-COR_ALERTA = "yellow"
-COR_TEXTO_SECUNDARIO = "grey62"
+# Paleta oficial do NEXUS
+COR_PRIMARIA = "#00A8FF"
+COR_TECNOLOGICO = "#0077FF"
+COR_ESCURO = "#001B44"
+COR_NEON = "#00FFFF"
+COR_BRANCO = "#E8F4FF"
+
+# Semântica
+COR_ACENTO = COR_NEON
+COR_SUCESSO = "#00E5A0"
+COR_ERRO = "#FF4D6D"
+COR_ALERTA = "#FFC857"
+COR_TEXTO_SECUNDARIO = "#7BA3C9"
+COR_MUTED = "#4A6A8A"
 
 # Prompt personalizado exibido a cada iteração do loop principal
-PROMPT = "[bold bright_cyan]NEXUS[/bold bright_cyan] [bold magenta]❯[/bold magenta] "
+PROMPT = (
+    f"[bold {COR_PRIMARIA}]NEXUS[/bold {COR_PRIMARIA}] "
+    f"[bold {COR_NEON}]❯[/bold {COR_NEON}] "
+)
 
 
 def painel(titulo: str, conteudo: Iterable[str], cor: str = COR_PRIMARIA) -> Panel:
@@ -45,10 +62,11 @@ def painel(titulo: str, conteudo: Iterable[str], cor: str = COR_PRIMARIA) -> Pan
     corpo = "\n".join(conteudo)
     return Panel(
         corpo,
-        title=f"[bold]{titulo}[/bold]",
+        title=f"[bold {COR_BRANCO}]{titulo}[/bold {COR_BRANCO}]",
         border_style=cor,
         box=ROUNDED,
         padding=(1, 2),
+        style=f"on {COR_ESCURO}",
     )
 
 
@@ -71,14 +89,15 @@ def tabela(
         Table: tabela Rich pronta para ser exibida ou embutida em uma Resposta.
     """
     tabela_rich = Table(
-        title=titulo,
+        title=f"[bold {COR_BRANCO}]{titulo}[/bold {COR_BRANCO}]",
         box=ROUNDED,
         border_style=cor,
-        header_style=f"bold {cor}",
+        header_style=f"bold {COR_NEON}",
+        title_style=f"bold {COR_PRIMARIA}",
         expand=False,
     )
     for coluna in colunas:
-        tabela_rich.add_column(coluna)
+        tabela_rich.add_column(coluna, style=COR_BRANCO)
     for linha in linhas:
         tabela_rich.add_row(*linha)
     return tabela_rich
@@ -110,7 +129,19 @@ def barra_progresso(percentual: float, largura: int = 24) -> str:
         cor = COR_ERRO
 
     barra = "█" * preenchido + "░" * vazio
-    return f"[{cor}]{barra}[/{cor}] {percentual:.0f}%"
+    return f"[{cor}]{barra}[/{cor}] [{COR_BRANCO}]{percentual:.0f}%[/{COR_BRANCO}]"
+
+
+def status_indicador(ativo: bool = True) -> str:
+    """
+    Retorna um indicador de status compacto.
+
+    Args:
+        ativo: se True, exibe online (neon); caso contrário, offline.
+    """
+    if ativo:
+        return f"[bold {COR_NEON}]● ONLINE[/bold {COR_NEON}]"
+    return f"[bold {COR_ERRO}]● OFFLINE[/bold {COR_ERRO}]"
 
 
 def detectar_distro() -> str:

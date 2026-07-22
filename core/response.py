@@ -6,16 +6,18 @@ no terminal com a identidade visual do NEXUS.
 
 Um comando pode retornar apenas uma `mensagem` de texto (para confirmações
 rápidas, como "Abrindo Brave...") ou também um `renderable` Rich (Panel,
-Table, Columns...) para saídas mais elaboradas, como os painéis de
-CPU/RAM/disco. Nenhum outro módulo deve imprimir diretamente no terminal —
-toda saída passa por aqui, o que preserva compatibilidade: comandos antigos
-que só definem `mensagem` continuam funcionando exatamente como antes.
+Table, Columns...) para saídas mais elaboradas. Nenhum outro módulo deve
+imprimir diretamente no terminal — toda saída passa por aqui.
 """
+
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional
 
 from rich.console import Console, RenderableType
+
+from core import ui
 
 console = Console()
 
@@ -51,9 +53,13 @@ def exibir(resposta: Resposta) -> None:
     if not resposta.mensagem:
         return
 
-    icone = "[bold green]✔[/bold green]" if resposta.sucesso else "[bold red]✗[/bold red]"
+    if resposta.sucesso:
+        icone = f"[bold {ui.COR_SUCESSO}]✔[/bold {ui.COR_SUCESSO}]"
+    else:
+        icone = f"[bold {ui.COR_ERRO}]✗[/bold {ui.COR_ERRO}]"
+
     linhas = resposta.mensagem.split("\n")
-    console.print(f"{icone} {linhas[0]}")
+    console.print(f"{icone} [{ui.COR_BRANCO}]{linhas[0]}[/{ui.COR_BRANCO}]")
     for linha in linhas[1:]:
-        console.print(f"   {linha}")
+        console.print(f"   [{ui.COR_TEXTO_SECUNDARIO}]{linha}[/{ui.COR_TEXTO_SECUNDARIO}]")
     console.print()

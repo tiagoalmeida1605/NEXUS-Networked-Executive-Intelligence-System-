@@ -7,25 +7,37 @@ pelo parser para o módulo de commands/ correto.
 O executor não implementa lógica de negócio própria — apenas roteia.
 """
 
-from typing import Any, Callable, Dict
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from rich.columns import Columns
 
 from commands import apps, browser, info, system
+from commands import history_cmd, update_cmd
 from core import ui
 from core.parser import Comando
 from core.response import Resposta
+
+if TYPE_CHECKING:
+    from core.history import Historico
 
 
 class Executor:
     """Encaminha comandos interpretados para os módulos responsáveis por executá-los."""
 
-    def __init__(self, config: Dict[str, Any]) -> None:
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        historico: Optional["Historico"] = None,
+    ) -> None:
         """
         Args:
-            config: dicionário de configuração carregado de config/config.json.
+            config: dicionário de configuração do usuário.
+            historico: instância opcional do gerenciador de histórico.
         """
         self.config = config
+        self.historico = historico
         self._comandos_simples: Dict[str, Callable[[], Resposta]] = {
             "hora": info.hora,
             "data": info.data,
@@ -60,6 +72,12 @@ class Executor:
         if comando.acao in ("ajuda", "help"):
             return self._ajuda()
 
+        if comando.acao in ("history", "historico"):
+            return self._historico(comando.alvo)
+
+        if comando.acao == "update":
+            return update_cmd.executar_atualizacao(interativo=True)
+
         if comando.acao == "sair":
             return Resposta(sucesso=True, mensagem="Encerrando NEXUS...", encerrar=True)
 
@@ -68,6 +86,16 @@ class Executor:
             return funcao()
 
         return Resposta(sucesso=False, mensagem='Comando desconhecido.\nDigite "ajuda".')
+
+    def _historico(self, alvo: Optional[str]) -> Resposta:
+        """Roteia subcomandos do histórico."""
+        if self.historico is None:
+            return Resposta(sucesso=False, mensagem="Histórico não inicializado.")
+
+        if alvo in ("limpar", "clear"):
+            return history_cmd.limpar_historico(self.historico)
+
+        return history_cmd.exibir_historico(self.historico)
 
     @staticmethod
     def _ajuda() -> Resposta:
@@ -80,6 +108,9 @@ class Executor:
             ("ram", "Exibe o uso da memória RAM"),
             ("disco", "Exibe o uso do disco"),
             ("sistema", "Exibe informações do sistema operacional"),
+            ("history", "Exibe o histórico de comandos"),
+            ("history limpar", "Limpa o histórico de comandos"),
+            ("update", "Verifica e aplica atualizações seguras"),
             ("limpar", "Limpa a tela"),
             ("sair", "Encerra o NEXUS"),
         ]
@@ -102,7 +133,7 @@ class Executor:
             "Sistema", ["Comando", "Descrição"], comandos_sistema, cor=ui.COR_PRIMARIA
         )
         tabela_apps = ui.tabela(
-            "Aplicativos & Sites", ["Comando", "Descrição"], comandos_apps, cor=ui.COR_ACENTO
+            "Aplicativos & Sites", ["Comando", "Descrição"], comandos_apps, cor=ui.COR_TECNOLOGICO
         )
 
         colunas = Columns([tabela_sistema, tabela_apps], equal=False, expand=False)

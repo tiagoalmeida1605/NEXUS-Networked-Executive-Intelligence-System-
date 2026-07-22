@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "label": "v0.2 Alpha",
+    "codename": "Kernel",
+    "released": "2026-07-21",
+    "changelog": [
+        "Sistema de configuração profissional em ~/.config/nexus/",
+        "Sistema de logs estruturado",
+        "Histórico de comandos com navegação por setas",
+        "Atualização segura com backup e rollback",
+        "Banner ASCII com animação de inicialização",
+        "Identidade visual em tons de azul tecnológico"
+    ]
+}
