@@ -9,6 +9,7 @@ from __future__ import annotations
 from rich.align import Align
 from rich.console import Console
 from rich.panel import Panel
+from rich.text import Text
 
 from core import ui
 from core.response import Resposta
@@ -25,7 +26,7 @@ def executar_atualizacao(interativo: bool = True) -> Resposta:
         interativo: quando True, solicita confirmação [S/N] ao usuário.
     """
     with console.status(
-        f"[bold {ui.COR_PRIMARIA}]Verificando atualizações...[/bold {ui.COR_PRIMARIA}]",
+        Text("Verificando atualizações...", style=f"bold {ui.COR_PRIMARIA}"),
         spinner="dots12",
         spinner_style=ui.COR_NEON,
     ):
@@ -39,8 +40,10 @@ def executar_atualizacao(interativo: bool = True) -> Resposta:
     if interativo:
         try:
             resposta = console.input(
-                f"\n[{ui.COR_BRANCO}]Deseja atualizar?[/] "
-                f"[bold {ui.COR_NEON}]\\[S/N][/bold {ui.COR_NEON}] "
+                Text.assemble(
+                    ("\nDeseja atualizar? ", ui.COR_BRANCO),
+                    ("[S/N] ", f"bold {ui.COR_NEON}"),
+                )
             ).strip().lower()
         except (KeyboardInterrupt, EOFError):
             console.print()
@@ -50,30 +53,22 @@ def executar_atualizacao(interativo: bool = True) -> Resposta:
             return Resposta(sucesso=True, mensagem="Atualização cancelada pelo usuário.")
 
     with console.status(
-        f"[bold {ui.COR_PRIMARIA}]Aplicando atualização segura...[/bold {ui.COR_PRIMARIA}]",
+        Text("Aplicando atualização segura...", style=f"bold {ui.COR_PRIMARIA}"),
         spinner="dots12",
         spinner_style=ui.COR_NEON,
     ):
         resultado = aplicar_atualizacao(info)
 
     if resultado.sucesso:
-        painel = ui.painel(
-            "UPDATE OK",
-            [
-                f"[{ui.COR_SUCESSO}]✔ {resultado.mensagem}[/{ui.COR_SUCESSO}]",
-                f"[{ui.COR_TEXTO_SECUNDARIO}]Backup: {resultado.backup}[/{ui.COR_TEXTO_SECUNDARIO}]"
-                if resultado.backup
-                else "",
-            ],
-            cor=ui.COR_SUCESSO,
-        )
+        linhas = [f"✔ {resultado.mensagem}"]
+        if resultado.backup:
+            linhas.append(f"Backup: {resultado.backup}")
+        painel = ui.painel("UPDATE OK", linhas, cor=ui.COR_SUCESSO)
         return Resposta(sucesso=True, mensagem=resultado.mensagem, renderable=painel)
 
     painel = ui.painel(
         "UPDATE FAILED",
-        [
-            f"[{ui.COR_ERRO}]✗ {resultado.mensagem}[/{ui.COR_ERRO}]",
-        ],
+        [f"✗ {resultado.mensagem}"],
         cor=ui.COR_ERRO,
     )
     return Resposta(sucesso=False, mensagem=resultado.mensagem, renderable=painel)
@@ -81,31 +76,25 @@ def executar_atualizacao(interativo: bool = True) -> Resposta:
 
 def _exibir_painel_update(info: InfoAtualizacao) -> None:
     """Renderiza o painel [NEXUS UPDATE] no estilo solicitado."""
-    linhas_alt = []
+    texto = Text()
+    texto.append("Versão atual:\n", style=f"bold {ui.COR_TEXTO_SECUNDARIO}")
+    texto.append(f"{info.atual_label}\n\n", style=f"bold {ui.COR_PRIMARIA}")
+    texto.append("Nova versão:\n", style=f"bold {ui.COR_TEXTO_SECUNDARIO}")
+    texto.append(f"{info.nova_label}\n\n", style=f"bold {ui.COR_NEON}")
+    texto.append("Alterações:\n", style=f"bold {ui.COR_TEXTO_SECUNDARIO}")
+
     if info.alteracoes:
         for item in info.alteracoes:
-            linhas_alt.append(f"[bold {ui.COR_NEON}]+[/bold {ui.COR_NEON}] {item}")
+            texto.append("+ ", style=f"bold {ui.COR_NEON}")
+            texto.append(f"{item}\n", style=ui.COR_BRANCO)
     else:
-        linhas_alt.append(f"[{ui.COR_TEXTO_SECUNDARIO}]Sem notas de alteração.[/{ui.COR_TEXTO_SECUNDARIO}]")
+        texto.append("Sem notas de alteração.\n", style=ui.COR_TEXTO_SECUNDARIO)
 
-    corpo = "\n".join(
-        [
-            f"[bold {ui.COR_TEXTO_SECUNDARIO}]Versão atual:[/{ui.COR_TEXTO_SECUNDARIO}]",
-            f"[bold {ui.COR_PRIMARIA}]{info.atual_label}[/bold {ui.COR_PRIMARIA}]",
-            "",
-            f"[bold {ui.COR_TEXTO_SECUNDARIO}]Nova versão:[/{ui.COR_TEXTO_SECUNDARIO}]",
-            f"[bold {ui.COR_NEON}]{info.nova_label}[/bold {ui.COR_NEON}]",
-            "",
-            f"[bold {ui.COR_TEXTO_SECUNDARIO}]Alterações:[/{ui.COR_TEXTO_SECUNDARIO}]",
-            *linhas_alt,
-            "",
-            f"[{ui.COR_MUTED}]{info.mensagem}[/{ui.COR_MUTED}]",
-        ]
-    )
+    texto.append(f"\n{info.mensagem}", style=ui.COR_MUTED)
 
     painel = Panel(
-        corpo,
-        title=f"[bold {ui.COR_BRANCO}]NEXUS UPDATE[/bold {ui.COR_BRANCO}]",
+        texto,
+        title=Text("NEXUS UPDATE", style=f"bold {ui.COR_BRANCO}"),
         border_style=ui.COR_PRIMARIA,
         padding=(1, 2),
     )

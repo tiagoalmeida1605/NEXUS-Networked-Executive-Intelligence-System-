@@ -1,10 +1,13 @@
 """
 core/executor.py
 
-Responsável exclusivamente por encaminhar comandos já interpretados
-pelo parser para o módulo de commands/ correto.
+Roteador de comandos internos do NEXUS.
 
-O executor não implementa lógica de negócio própria — apenas roteia.
+Regra de ouro:
+    1. Verificar se a ação está no catálogo interno do NEXUS.
+    2. Se sim, executar a função correspondente (nunca o SO).
+    3. Comandos do sistema operacional só via ``shell <comando>``.
+    4. Comando desconhecido → mensagem amigável, sem crash e sem shell.
 """
 
 from __future__ import annotations
@@ -13,18 +16,28 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 
 from rich.columns import Columns
 
-from commands import apps, browser, info, system
+from commands import apps, browser, info, shell_cmd, system
 from commands import history_cmd, update_cmd
 from core import ui
+from core.logger import logger
 from core.parser import Comando
 from core.response import Resposta
 
 if TYPE_CHECKING:
     from core.history import Historico
 
+# Mensagem padrão para comandos que não existem no catálogo interno
+MSG_NAO_ENCONTRADO = (
+    "Comando não encontrado. Use 'help' para ver os comandos disponíveis."
+)
+
 
 class Executor:
-    """Encaminha comandos interpretados para os módulos responsáveis por executá-los."""
+    """
+    Encaminha comandos interpretados apenas para handlers internos do NEXUS.
+
+    Nenhum texto digitado é repassado automaticamente ao sistema operacional.
+    """
 
     def __init__(
         self,
@@ -38,7 +51,10 @@ class Executor:
         """
         self.config = config
         self.historico = historico
-        self._comandos_simples: Dict[str, Callable[[], Resposta]] = {
+
+        # Catálogo explícito de comandos internos (ação → handler).
+        # Handlers sem alvo: Callable[[], Resposta]
+        self._internos: Dict[str, Callable[[], Resposta]] = {
             "hora": info.hora,
             "data": info.data,
             "cpu": system.cpu,
@@ -48,6 +64,18 @@ class Executor:
             "google": browser.google,
             "youtube": browser.youtube,
             "github": browser.github,
+            "limpar": system.limpar,
+            "clear": system.limpar,
+            "ajuda": self._ajuda,
+            "help": self._ajuda,
+            "version": info.versao,
+            "versao": info.versao,
+            "update": self._update,
+            "history": lambda: self._historico(None),
+            "historico": lambda: self._historico(None),
+            "sair": self._sair,
+            "exit": self._sair,
+            "quit": self._sair,
         }
 
     def executar(self, comando: Comando) -> Resposta:
@@ -60,32 +88,54 @@ class Executor:
         Returns:
             Resposta: resultado padronizado da execução.
         """
+        try:
+            return self._rotear(comando)
+        except Exception as erro:  # noqa: BLE001
+            logger.erro(f"Falha ao executar '{comando.bruto}': {erro}")
+            return Resposta(
+                sucesso=False,
+                mensagem=(
+                    f"Erro ao executar o comando interno: {erro}\n"
+                    "O NEXUS continua em execução."
+                ),
+            )
+
+    def _rotear(self, comando: Comando) -> Resposta:
+        """Roteia para handler interno; nunca envia texto cru ao SO."""
         if comando.acao == "vazio":
             return Resposta(sucesso=False, mensagem="")
 
-        if comando.acao == "abrir" and comando.alvo:
+        # --- Comandos com alvo (ainda 100% internos) ---
+        if comando.acao == "abrir":
+            if not comando.alvo:
+                return Resposta(
+                    sucesso=False,
+                    mensagem='Uso: abrir <alvo>\nExemplo: abrir brave',
+                )
             return apps.abrir(comando.alvo, self.config)
 
-        if comando.acao == "limpar":
-            return system.limpar()
+        if comando.acao == "shell":
+            # Única porta explícita para o sistema operacional
+            return shell_cmd.executar(comando.alvo)
 
-        if comando.acao in ("ajuda", "help"):
-            return self._ajuda()
-
-        if comando.acao in ("history", "historico"):
+        if comando.acao in ("history", "historico") and comando.alvo:
             return self._historico(comando.alvo)
 
-        if comando.acao == "update":
-            return update_cmd.executar_atualizacao(interativo=True)
+        # --- Catálogo de comandos internos sem alvo ---
+        handler = self._internos.get(comando.acao)
+        if handler is not None:
+            return handler()
 
-        if comando.acao == "sair":
-            return Resposta(sucesso=True, mensagem="Encerrando NEXUS...", encerrar=True)
+        # Desconhecido: NÃO executar no SO
+        return Resposta(sucesso=False, mensagem=MSG_NAO_ENCONTRADO)
 
-        funcao = self._comandos_simples.get(comando.acao)
-        if funcao:
-            return funcao()
+    def _update(self) -> Resposta:
+        """Handler interno do atualizador do NEXUS (não é o 'update' do SO)."""
+        return update_cmd.executar_atualizacao(interativo=True)
 
-        return Resposta(sucesso=False, mensagem='Comando desconhecido.\nDigite "ajuda".')
+    @staticmethod
+    def _sair() -> Resposta:
+        return Resposta(sucesso=True, mensagem="Encerrando NEXUS...", encerrar=True)
 
     def _historico(self, alvo: Optional[str]) -> Resposta:
         """Roteia subcomandos do histórico."""
@@ -97,11 +147,11 @@ class Executor:
 
         return history_cmd.exibir_historico(self.historico)
 
-    @staticmethod
-    def _ajuda() -> Resposta:
-        """Monta os painéis de ajuda com todos os comandos disponíveis."""
-        comandos_sistema = [
-            ("ajuda", "Exibe esta lista de comandos"),
+    def _ajuda(self) -> Resposta:
+        """Monta os painéis de ajuda alinhados ao catálogo do roteador."""
+        comandos_nexus = [
+            ("help / ajuda", "Exibe esta lista de comandos"),
+            ("version / versao", "Exibe a versão do NEXUS"),
             ("hora", "Exibe a hora atual"),
             ("data", "Exibe a data atual"),
             ("cpu", "Exibe o uso da CPU"),
@@ -110,7 +160,8 @@ class Executor:
             ("sistema", "Exibe informações do sistema operacional"),
             ("history", "Exibe o histórico de comandos"),
             ("history limpar", "Limpa o histórico de comandos"),
-            ("update", "Verifica e aplica atualizações seguras"),
+            ("update", "Atualizador interno do NEXUS"),
+            ("shell <cmd>", "Executa um comando no sistema (explícito)"),
             ("limpar", "Limpa a tela"),
             ("sair", "Encerra o NEXUS"),
         ]
@@ -129,12 +180,18 @@ class Executor:
             ("github", "Abre o GitHub"),
         ]
 
-        tabela_sistema = ui.tabela(
-            "Sistema", ["Comando", "Descrição"], comandos_sistema, cor=ui.COR_PRIMARIA
+        tabela_nexus = ui.tabela(
+            "NEXUS (internos)",
+            ["Comando", "Descrição"],
+            comandos_nexus,
+            cor=ui.COR_PRIMARIA,
         )
         tabela_apps = ui.tabela(
-            "Aplicativos & Sites", ["Comando", "Descrição"], comandos_apps, cor=ui.COR_TECNOLOGICO
+            "Aplicativos & Sites",
+            ["Comando", "Descrição"],
+            comandos_apps,
+            cor=ui.COR_TECNOLOGICO,
         )
 
-        colunas = Columns([tabela_sistema, tabela_apps], equal=False, expand=False)
+        colunas = Columns([tabela_nexus, tabela_apps], equal=False, expand=False)
         return Resposta(sucesso=True, mensagem="Comandos disponíveis.", renderable=colunas)

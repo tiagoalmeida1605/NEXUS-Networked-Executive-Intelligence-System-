@@ -70,13 +70,21 @@ def _tratar_argv(argv: List[str], historico: Historico) -> Optional[int]:
         exibir(resposta)
         return 0 if resposta.sucesso else 1
 
+    if acao in ("version", "versao"):
+        from commands import info as info_cmd
+
+        resposta = info_cmd.versao()
+        exibir(resposta)
+        return 0 if resposta.sucesso else 1
+
     if acao in ("-h", "--help", "help", "ajuda"):
         console.print(
             f"[bold {ui.COR_PRIMARIA}]NEXUS[/bold {ui.COR_PRIMARIA}] — "
             f"[{ui.COR_BRANCO}]Networked Executive Intelligence System[/{ui.COR_BRANCO}]\n\n"
             f"  [{ui.COR_NEON}]nexus[/{ui.COR_NEON}]              Inicia o modo interativo\n"
             f"  [{ui.COR_NEON}]nexus history[/{ui.COR_NEON}]      Exibe o histórico de comandos\n"
-            f"  [{ui.COR_NEON}]nexus update[/{ui.COR_NEON}]       Verifica e aplica atualizações\n"
+            f"  [{ui.COR_NEON}]nexus update[/{ui.COR_NEON}]       Atualizador interno do NEXUS\n"
+            f"  [{ui.COR_NEON}]nexus version[/{ui.COR_NEON}]      Exibe a versão do NEXUS\n"
             f"  [{ui.COR_NEON}]nexus help[/{ui.COR_NEON}]         Exibe esta ajuda\n"
         )
         return 0
@@ -131,8 +139,24 @@ def main(argv: Optional[List[str]] = None) -> int:
                 historico.adicionar(entrada)
                 logger.comando(entrada.strip())
 
-            comando = parser.interpretar(entrada)
-            resposta = executor.executar(comando)
+            try:
+                comando = parser.interpretar(entrada)
+                resposta = executor.executar(comando)
+            except Exception as erro:  # noqa: BLE001
+                # Um comando nunca deve derrubar o loop principal do NEXUS.
+                logger.erro(f"Erro no ciclo de comando: {erro}")
+                console.print(
+                    f"[bold {ui.COR_ERRO}]✗[/bold {ui.COR_ERRO}] "
+                    f"[{ui.COR_BRANCO}]Falha ao processar o comando: {erro}[/{ui.COR_BRANCO}]"
+                )
+                console.print(
+                    f"   [{ui.COR_TEXTO_SECUNDARIO}]"
+                    f"O NEXUS continua em execução. Use 'help' para ver os comandos."
+                    f"[/{ui.COR_TEXTO_SECUNDARIO}]"
+                )
+                console.print()
+                continue
+
             exibir(resposta)
 
             if comando.acao != "vazio":
