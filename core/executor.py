@@ -70,6 +70,7 @@ class Executor:
             "help": self._ajuda,
             "version": info.versao,
             "versao": info.versao,
+            "about": self._about,
             "update": self._update,
             "history": lambda: self._historico(None),
             "historico": lambda: self._historico(None),
@@ -134,6 +135,13 @@ class Executor:
         return update_cmd.executar_atualizacao(interativo=True)
 
     @staticmethod
+    def _about() -> Resposta:
+        """Handler interno da tela About / identidade."""
+        from commands import about_cmd
+
+        return about_cmd.about()
+
+    @staticmethod
     def _sair() -> Resposta:
         return Resposta(sucesso=True, mensagem="Encerrando NEXUS...", encerrar=True)
 
@@ -154,11 +162,12 @@ class Executor:
         from core.config import carregar_versao
 
         meta = carregar_versao()
-        versao = str(meta.get("label", "v0.2.2 Alpha"))
+        versao = str(meta.get("label", "v0.2.2.1 Alpha"))
         codename = str(meta.get("codename", "Kernel Identity"))
 
         comandos_nexus = [
             ("help / ajuda", "Exibe esta lista de comandos"),
+            ("about", "Identidade oficial do NEXUS"),
             ("version / versao", "Exibe a versão do NEXUS"),
             ("hora", "Exibe a hora atual"),
             ("data", "Exibe a data atual"),

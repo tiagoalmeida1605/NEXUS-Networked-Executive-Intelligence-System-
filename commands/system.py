@@ -92,7 +92,7 @@ def sistema() -> Resposta:
 
     painel_host = ui.painel("Sistema", conteudo, cor=ui.COR_ACENTO)
     identidade = ui.painel_identidade(
-        versao=str(meta.get("label", "v0.2.2 Alpha")),
+        versao=str(meta.get("label", "v0.2.2.1 Alpha")),
         codename=str(meta.get("codename", "Kernel Identity")),
         online=True,
     )

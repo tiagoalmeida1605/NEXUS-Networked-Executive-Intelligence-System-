@@ -45,9 +45,10 @@ def versao() -> Resposta:
         "BUILD",
         [
             f"SemVer: {numero}",
+            f"Tema: {tema_meta.get('theme', 'NEXUS Blue')}",
             f"Logo PNG: {'✔' if tema_meta['logo_png'] else '✗'}",
+            f"Logo (fundo): {'✔' if tema_meta.get('logo_with_background') else '✗'}",
             f"Logo ASCII: {'✔' if tema_meta['logo_ascii'] else '✗'}",
-            f"Theme: Kernel Identity",
         ],
         cor=theme.COR_TECNOLOGICO,
     )

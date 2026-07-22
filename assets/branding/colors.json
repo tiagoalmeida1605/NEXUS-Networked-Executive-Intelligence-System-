@@ -1,0 +1,17 @@
+{
+  "name": "NEXUS Branding Colors",
+  "version": "0.2.2.1",
+  "palette": {
+    "neon": "#00FFFF",
+    "tech": "#0077FF",
+    "primary": "#00A8FF",
+    "dark": "#001B44",
+    "white": "#E8F4FF",
+    "success": "#00E5A0",
+    "error": "#FF4D6D",
+    "warning": "#FFC857",
+    "secondary": "#7BA3C9",
+    "muted": "#4A6A8A",
+    "black": "#000000"
+  }
+}

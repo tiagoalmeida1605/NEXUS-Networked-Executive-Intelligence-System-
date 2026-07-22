@@ -77,11 +77,19 @@ def _tratar_argv(argv: List[str], historico: Historico) -> Optional[int]:
         exibir(resposta)
         return 0 if resposta.sucesso else 1
 
+    if acao == "about":
+        from commands import about_cmd
+
+        resposta = about_cmd.about()
+        exibir(resposta)
+        return 0 if resposta.sucesso else 1
+
     if acao in ("-h", "--help", "help", "ajuda"):
         console.print(
             f"[bold {ui.COR_PRIMARIA}]NEXUS[/bold {ui.COR_PRIMARIA}] — "
             f"[{ui.COR_BRANCO}]Networked Executive Intelligence System[/{ui.COR_BRANCO}]\n\n"
             f"  [{ui.COR_NEON}]nexus[/{ui.COR_NEON}]              Inicia o modo interativo\n"
+            f"  [{ui.COR_NEON}]nexus about[/{ui.COR_NEON}]        Identidade oficial do NEXUS\n"
             f"  [{ui.COR_NEON}]nexus history[/{ui.COR_NEON}]      Exibe o histórico de comandos\n"
             f"  [{ui.COR_NEON}]nexus update[/{ui.COR_NEON}]       Atualizador interno do NEXUS\n"
             f"  [{ui.COR_NEON}]nexus version[/{ui.COR_NEON}]      Exibe a versão do NEXUS\n"

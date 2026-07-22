@@ -7,20 +7,29 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.2.2.1] — 2026-07-21 — Kernel Identity
+
+### Alterado
+- Versão atual marcada como **v0.2.2.1 Alpha**
+- Revisão da identidade visual e organização de branding
+
+---
+
 ## [0.2.2] — 2026-07-21 — Kernel Identity
 
 ### Adicionado
-- Logo oficial (`assets/logo.png`) e logo ASCII (`assets/logo_ascii.txt`)
-- Banner tipográfico (`assets/banner.txt`)
-- Paleta oficial em `assets/colors.json`
+- Estrutura `assets/branding/` e `assets/themes/`
+- Logo oficial com fundo e sem fundo
+- Tema **NEXUS Blue** (`nexus_blue.json`)
+- Comando `about` / `nexus about`
 - Sistema de tema centralizado (`core/theme.py`)
-- Painel de identidade em boot, `help`, `version` e `sistema`
-- Mensagem de boot: *"Identity module loaded."*
+- Painel de identidade no boot
+- Seção **NEXUS Identity** no README
 
 ### Alterado
-- Banner de inicialização alinhado à marca Kernel Identity
-- `core/ui.py` passa a reexportar o tema (compatibilidade preservada)
-- README reescrito como página oficial do projeto
+- Banner de inicialização: ASCII + painel de identidade
+- Assets de marca reorganizados profissionalmente
+- `core/ui.py` reexporta o tema (compatibilidade preservada)
 
 ---
 

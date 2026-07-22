@@ -1,14 +1,15 @@
 {
-    "version": "0.2.2",
-    "label": "v0.2.2 Alpha",
+    "version": "0.2.2.1",
+    "label": "v0.2.2.1 Alpha",
     "codename": "Kernel Identity",
     "released": "2026-07-21",
     "changelog": [
-        "Logo oficial N (assets/logo.png) e versão ASCII",
-        "Sistema de tema centralizado em core/theme.py",
-        "Paleta oficial em assets/colors.json",
-        "Novo banner de inicialização Identity",
-        "Painel de identidade em help, version e sistema",
-        "README profissional com marca visual"
+        "Versão de revisão da identidade visual (v0.2.2.1)",
+        "Estrutura assets/branding e assets/themes",
+        "Logo oficial com fundo e sem fundo",
+        "Tema NEXUS Blue (nexus_blue.json)",
+        "Comando about / nexus about",
+        "Banner ASCII + painel de identidade",
+        "README com seção NEXUS Identity"
     ]
 }

@@ -3,7 +3,7 @@ core/ui.py
 
 Camada de apresentação do NEXUS — reexporta o tema oficial.
 
-A partir de v0.2.2 (Kernel Identity), cores e componentes vivem em
+A partir de v0.2.2.1 (Kernel Identity), cores e componentes vivem em
 ``core/theme.py``. Este módulo mantém a API antiga para não quebrar
 imports existentes (``from core import ui``).
 """
@@ -27,9 +27,11 @@ from core.theme import (  # noqa: F401
     cabecalho_ajuda,
     carregar_banner_ascii,
     carregar_logo_ascii,
+    caminho_logo_com_fundo,
     caminho_logo_png,
     console,
     detectar_distro,
+    nome_tema,
     painel,
     painel_identidade,
     paleta,
@@ -57,9 +59,11 @@ __all__ = [
     "cabecalho_ajuda",
     "carregar_banner_ascii",
     "carregar_logo_ascii",
+    "caminho_logo_com_fundo",
     "caminho_logo_png",
     "console",
     "detectar_distro",
+    "nome_tema",
     "painel",
     "painel_identidade",
     "paleta",

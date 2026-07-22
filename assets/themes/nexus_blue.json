@@ -1,7 +1,9 @@
 {
-  "name": "NEXUS Official Theme",
-  "version": "0.2.2",
+  "name": "NEXUS Blue Theme",
+  "id": "nexus_blue",
+  "version": "0.2.2.1",
   "codename": "Kernel Identity",
+  "description": "Tema oficial do NEXUS — tecnologia, inteligência, futuro e precisão.",
   "palette": {
     "neon": "#00FFFF",
     "tech": "#0077FF",
@@ -27,5 +29,12 @@
   "prompt": {
     "label": "NEXUS",
     "separator": "❯"
+  },
+  "assets": {
+    "logo": "branding/logo.png",
+    "logo_with_background": "branding/logo_with_background.png",
+    "logo_ascii": "branding/logo_ascii.txt",
+    "banner": "branding/banner.txt",
+    "colors": "branding/colors.json"
   }
 }
