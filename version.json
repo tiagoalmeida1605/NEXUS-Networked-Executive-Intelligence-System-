@@ -1,14 +1,14 @@
 {
-    "version": "0.2.0",
-    "label": "v0.2 Alpha",
-    "codename": "Kernel",
+    "version": "0.2.2",
+    "label": "v0.2.2 Alpha",
+    "codename": "Kernel Identity",
     "released": "2026-07-21",
     "changelog": [
-        "Sistema de configuração profissional em ~/.config/nexus/",
-        "Sistema de logs estruturado",
-        "Histórico de comandos com navegação por setas",
-        "Atualização segura com backup e rollback",
-        "Banner ASCII com animação de inicialização",
-        "Identidade visual em tons de azul tecnológico"
+        "Logo oficial N (assets/logo.png) e versão ASCII",
+        "Sistema de tema centralizado em core/theme.py",
+        "Paleta oficial em assets/colors.json",
+        "Novo banner de inicialização Identity",
+        "Painel de identidade em help, version e sistema",
+        "README profissional com marca visual"
     ]
 }

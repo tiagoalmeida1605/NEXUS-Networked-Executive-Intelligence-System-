@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from core import ui
+from rich.console import Group
+
+from core import theme
 from core.config import carregar_versao
 from core.response import Resposta
 
@@ -26,26 +28,36 @@ def data() -> Resposta:
 
 
 def versao() -> Resposta:
-    """Retorna a versão e o codename atuais do NEXUS."""
+    """Retorna a versão, codename e identidade visual do NEXUS."""
     meta = carregar_versao()
     label = str(meta.get("label", "desconhecida"))
     codename = str(meta.get("codename", "—"))
     numero = str(meta.get("version", "—"))
+    tema_meta = theme.meta_tema()
 
-    painel = ui.painel(
-        "VERSION",
-        [
-            f"[{ui.COR_TEXTO_SECUNDARIO}]Versão:[/{ui.COR_TEXTO_SECUNDARIO}] "
-            f"[bold {ui.COR_PRIMARIA}]{label}[/bold {ui.COR_PRIMARIA}]",
-            f"[{ui.COR_TEXTO_SECUNDARIO}]Codename:[/{ui.COR_TEXTO_SECUNDARIO}] "
-            f"[bold {ui.COR_NEON}]{codename}[/bold {ui.COR_NEON}]",
-            f"[{ui.COR_TEXTO_SECUNDARIO}]SemVer:[/{ui.COR_TEXTO_SECUNDARIO}] "
-            f"[{ui.COR_BRANCO}]{numero}[/{ui.COR_BRANCO}]",
-        ],
-        cor=ui.COR_PRIMARIA,
+    identidade = theme.painel_identidade(
+        versao=label,
+        codename=codename,
+        online=True,
     )
+
+    detalhes = theme.painel(
+        "BUILD",
+        [
+            f"SemVer: {numero}",
+            f"Logo PNG: {'✔' if tema_meta['logo_png'] else '✗'}",
+            f"Logo ASCII: {'✔' if tema_meta['logo_ascii'] else '✗'}",
+            f"Theme: Kernel Identity",
+        ],
+        cor=theme.COR_TECNOLOGICO,
+    )
+
     return Resposta(
         sucesso=True,
         mensagem=f"{label} ({codename})",
-        renderable=painel,
+        renderable=Group(
+            theme.render_logo_ascii(),
+            identidade,
+            detalhes,
+        ),
     )

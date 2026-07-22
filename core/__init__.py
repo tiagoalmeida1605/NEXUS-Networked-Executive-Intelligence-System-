@@ -1,6 +1,6 @@
 """Pacote core do NEXUS — núcleo do sistema.
 
 Módulos:
-    banner, parser, executor, response, ui,
+    theme, ui, banner, parser, executor, response,
     config, logger, history, update
 """

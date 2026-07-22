@@ -149,6 +149,14 @@ class Executor:
 
     def _ajuda(self) -> Resposta:
         """Monta os painéis de ajuda alinhados ao catálogo do roteador."""
+        from rich.console import Group
+
+        from core.config import carregar_versao
+
+        meta = carregar_versao()
+        versao = str(meta.get("label", "v0.2.2 Alpha"))
+        codename = str(meta.get("codename", "Kernel Identity"))
+
         comandos_nexus = [
             ("help / ajuda", "Exibe esta lista de comandos"),
             ("version / versao", "Exibe a versão do NEXUS"),
@@ -194,4 +202,11 @@ class Executor:
         )
 
         colunas = Columns([tabela_nexus, tabela_apps], equal=False, expand=False)
-        return Resposta(sucesso=True, mensagem="Comandos disponíveis.", renderable=colunas)
+        return Resposta(
+            sucesso=True,
+            mensagem="Comandos disponíveis.",
+            renderable=Group(
+                ui.cabecalho_ajuda(versao, codename),
+                colunas,
+            ),
+        )

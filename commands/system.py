@@ -76,7 +76,12 @@ def disco() -> Resposta:
 
 def sistema() -> Resposta:
     """Retorna um painel com informações gerais do sistema operacional."""
+    from rich.console import Group
+
+    from core.config import carregar_versao
+
     distro = ui.detectar_distro()
+    meta = carregar_versao()
 
     conteudo = [
         distro,
@@ -85,8 +90,17 @@ def sistema() -> Resposta:
         f"Arquitetura: {platform.machine()}",
     ]
 
-    painel = ui.painel("Sistema", conteudo, cor=ui.COR_ACENTO)
-    return Resposta(sucesso=True, mensagem=f"Sistema: {distro}", renderable=painel)
+    painel_host = ui.painel("Sistema", conteudo, cor=ui.COR_ACENTO)
+    identidade = ui.painel_identidade(
+        versao=str(meta.get("label", "v0.2.2 Alpha")),
+        codename=str(meta.get("codename", "Kernel Identity")),
+        online=True,
+    )
+    return Resposta(
+        sucesso=True,
+        mensagem=f"Sistema: {distro}",
+        renderable=Group(ui.render_logo_ascii(), identidade, painel_host),
+    )
 
 
 def limpar() -> Resposta:
