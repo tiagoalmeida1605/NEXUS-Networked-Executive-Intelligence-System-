@@ -7,6 +7,28 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.3.0] — 2026-07-25 — Core Evolution
+
+### Adicionado
+- Melhorias estruturais do core e reorganização interna
+- Comando de diagnóstico completo do sistema (`doctor` / `nexus doctor`)
+- Sistema dinâmico de descoberta e carregamento de plugins (`core/plugin_loader.py`)
+- Rotação automática de arquivos de log (limite de 1 MB)
+- Configuração estruturada com suporte a deep-merge (`preferences` e `modules`)
+
+### Alterado
+- Melhorias na arquitetura e desacoplamento do executor de comandos
+- Parser aprimorado com captura e tratamento de alvos generalizados
+- Refinamento da experiência CLI e catálogo de ajuda expandido
+- Organização do projeto para maior escalabilidade
+
+### Preparado
+- Base padronizada para ecossistema e desenvolvimento de plugins
+- Estrutura modular preparada para futuras integrações com Inteligência Artificial
+- Arquitetura expansível para novos módulos do ecossistema NEXUS
+
+---
+
 ## [0.2.2.1] — 2026-07-21 — Kernel Identity
 
 ### Alterado

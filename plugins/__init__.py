@@ -1,8 +1,11 @@
 """
 plugins/
 
-Espaço reservado para o futuro sistema de plugins do NEXUS.
+Sistema de plugins do NEXUS (v0.3 Alpha — Core Expansion).
 
-Versões futuras poderão carregar extensões daqui sem alterar o núcleo.
-Não implementado em v0.2 Alpha Kernel.
+Cada arquivo .py neste diretório é carregado automaticamente se:
+    1. Contém um dicionário PLUGIN_INFO com 'nome', 'versao' e 'descricao'.
+    2. Define uma função registrar(executor) que registra comandos.
+
+Veja exemplo_plugin.py e README.md para detalhes.
 """

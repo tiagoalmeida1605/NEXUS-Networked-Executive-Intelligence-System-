@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
 from rich.columns import Columns
 
 from commands import apps, browser, info, shell_cmd, system
-from commands import history_cmd, update_cmd
+from commands import history_cmd, update_cmd, doctor_cmd
 from core import ui
 from core.logger import logger
 from core.parser import Comando
@@ -72,12 +72,27 @@ class Executor:
             "versao": info.versao,
             "about": self._about,
             "update": self._update,
+            "doctor": doctor_cmd.doctor,
             "history": lambda: self._historico(None),
             "historico": lambda: self._historico(None),
             "sair": self._sair,
             "exit": self._sair,
             "quit": self._sair,
         }
+        
+        # Rastreamento de plugins para o comando de ajuda
+        self._plugin_help: list[tuple[str, str]] = []
+
+    def registrar_plugin(self, comando: str, handler: Callable[[], Resposta], descricao: str) -> None:
+        """Permite que plugins adicionem novos comandos no NEXUS."""
+        cmd_lower = comando.lower().strip()
+        if cmd_lower in self._internos:
+            logger.aviso(f"Plugin tentou sobrescrever o comando interno '{cmd_lower}'. Ignorado.")
+            return
+        
+        self._internos[cmd_lower] = handler
+        self._plugin_help.append((cmd_lower, f"[Plugin] {descricao}"))
+
 
     def executar(self, comando: Comando) -> Resposta:
         """
@@ -178,6 +193,7 @@ class Executor:
             ("history", "Exibe o histórico de comandos"),
             ("history limpar", "Limpa o histórico de comandos"),
             ("update", "Atualizador interno do NEXUS"),
+            ("doctor", "Diagnóstico completo do sistema"),
             ("shell <cmd>", "Executa um comando no sistema (explícito)"),
             ("limpar", "Limpa a tela"),
             ("sair", "Encerra o NEXUS"),
@@ -209,9 +225,21 @@ class Executor:
             comandos_apps,
             cor=ui.COR_TECNOLOGICO,
         )
+        
+        tabelas = [tabela_nexus, tabela_apps]
+        
+        if self._plugin_help:
+            tabela_plugins = ui.tabela(
+                "Plugins (Módulos)",
+                ["Comando", "Descrição"],
+                self._plugin_help,
+                cor=ui.COR_SUCESSO,
+            )
+            tabelas.append(tabela_plugins)
 
-        colunas = Columns([tabela_nexus, tabela_apps], equal=False, expand=False)
+        colunas = Columns(tabelas, equal=False, expand=False)
         return Resposta(
+
             sucesso=True,
             mensagem="Comandos disponíveis.",
             renderable=Group(

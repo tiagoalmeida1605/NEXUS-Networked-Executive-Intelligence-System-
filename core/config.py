@@ -45,7 +45,26 @@ _DEFAULT_CONFIG: Dict[str, Any] = {
     "downloads": str(Path.home() / "Downloads"),
     "documents": str(Path.home() / "Documents"),
     "projects": str(Path.home() / "Documents"),
+    "preferences": {
+        "language": "pt-BR",
+        "log_enabled": True,
+        "history_enabled": True,
+        "update_check": True,
+    },
+    "modules": {
+        "plugins_enabled": True,
+    },
 }
+
+def _merge_recursivo(base: dict, usuario: dict) -> dict:
+    """Faz o merge profundo de dicionários."""
+    resultado = dict(base)
+    for chave, valor in usuario.items():
+        if isinstance(valor, dict) and chave in resultado and isinstance(resultado[chave], dict):
+            resultado[chave] = _merge_recursivo(resultado[chave], valor)
+        else:
+            resultado[chave] = valor
+    return resultado
 
 
 def garantir_estrutura() -> Path:
@@ -101,9 +120,14 @@ def carregar_config() -> Dict[str, Any]:
             dados = json.load(arquivo)
             if not isinstance(dados, dict):
                 return dict(_DEFAULT_CONFIG)
-            return {**_DEFAULT_CONFIG, **dados}
+            return _merge_recursivo(_DEFAULT_CONFIG, dados)
     except (json.JSONDecodeError, OSError):
         return dict(_DEFAULT_CONFIG)
+
+def get_preference(key: str, default: Any = None) -> Any:
+    """Obtém uma preferência do config atual."""
+    config = carregar_config()
+    return config.get("preferences", {}).get(key, default)
 
 
 def salvar_config(config: Dict[str, Any]) -> None:

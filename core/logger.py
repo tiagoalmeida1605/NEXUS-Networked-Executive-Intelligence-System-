@@ -99,11 +99,26 @@ class NexusLogger:
 
         with self._lock:
             try:
+                self._rotacionar()
                 self._garantir_cabecalho()
                 with open(self.arquivo, "a", encoding="utf-8") as destino:
                     destino.write(bloco)
             except OSError:
                 # Logger nunca deve derrubar o sistema principal.
+                pass
+
+    def _rotacionar(self) -> None:
+        """Rotaciona o arquivo de log se exceder 1 MB."""
+        if not self.arquivo.exists():
+            return
+        if self.arquivo.stat().st_size >= 1_048_576:
+            backup = self.arquivo.with_name(f"{self.arquivo.name}.1")
+            try:
+                if backup.exists():
+                    backup.unlink()
+                self.arquivo.rename(backup)
+                self._cabecalho_garantido = False
+            except OSError:
                 pass
 
     def _garantir_cabecalho(self) -> None:

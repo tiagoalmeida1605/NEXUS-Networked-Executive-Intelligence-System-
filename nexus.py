@@ -84,6 +84,13 @@ def _tratar_argv(argv: List[str], historico: Historico) -> Optional[int]:
         exibir(resposta)
         return 0 if resposta.sucesso else 1
 
+    if acao == "doctor":
+        from commands import doctor_cmd
+
+        resposta = doctor_cmd.doctor()
+        exibir(resposta)
+        return 0 if resposta.sucesso else 1
+
     if acao in ("-h", "--help", "help", "ajuda"):
         console.print(
             f"[bold {ui.COR_PRIMARIA}]NEXUS[/bold {ui.COR_PRIMARIA}] — "
@@ -92,6 +99,7 @@ def _tratar_argv(argv: List[str], historico: Historico) -> Optional[int]:
             f"  [{ui.COR_NEON}]nexus about[/{ui.COR_NEON}]        Identidade oficial do NEXUS\n"
             f"  [{ui.COR_NEON}]nexus history[/{ui.COR_NEON}]      Exibe o histórico de comandos\n"
             f"  [{ui.COR_NEON}]nexus update[/{ui.COR_NEON}]       Atualizador interno do NEXUS\n"
+            f"  [{ui.COR_NEON}]nexus doctor[/{ui.COR_NEON}]       Diagnóstico completo do sistema\n"
             f"  [{ui.COR_NEON}]nexus version[/{ui.COR_NEON}]      Exibe a versão do NEXUS\n"
             f"  [{ui.COR_NEON}]nexus help[/{ui.COR_NEON}]         Exibe esta ajuda\n"
         )
@@ -128,6 +136,10 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         parser = Parser()
         executor = Executor(config, historico=historico)
+
+        if config.get("modules", {}).get("plugins_enabled", True):
+            from core.plugin_loader import carregar_plugins
+            carregar_plugins(executor)
 
         logger.info("Sistema iniciado.")
         exibir_banner(config)

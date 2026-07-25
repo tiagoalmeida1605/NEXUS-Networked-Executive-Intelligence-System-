@@ -1,15 +1,13 @@
 {
-    "version": "0.2.2.1",
-    "label": "v0.2.2.1 Alpha",
-    "codename": "Kernel Identity",
-    "released": "2026-07-21",
+    "version": "0.3.0",
+    "label": "v0.3 Alpha",
+    "codename": "Core Expansion",
+    "released": "2026-07-25",
     "changelog": [
-        "Versão de revisão da identidade visual (v0.2.2.1)",
-        "Estrutura assets/branding e assets/themes",
-        "Logo oficial com fundo e sem fundo",
-        "Tema NEXUS Blue (nexus_blue.json)",
-        "Comando about / nexus about",
-        "Banner ASCII + painel de identidade",
-        "README com seção NEXUS Identity"
+        "Nova arquitetura modular com sistema de plugins dinâmicos.",
+        "Novo comando `doctor` para diagnóstico completo do sistema.",
+        "Parser aprimorado para capturar alvos em comandos genéricos.",
+        "Sistema de log robusto com rotação automática de 1 MB.",
+        "Configuração estruturada com seções de preferências e módulos."
     ]
 }

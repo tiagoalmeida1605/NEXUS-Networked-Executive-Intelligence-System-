@@ -30,15 +30,10 @@ class Comando:
     bruto: str = ""
 
 
-# Ações internas do NEXUS que aceitam complemento (alvo / subcomando).
-# "shell" preserva o restante da linha como comando do SO (sem lower no alvo útil
-# — o lower é aplicado na linha toda; comandos de shell costumam ser case-sensitive
-# em argumentos, mas a ação em si é normalizada).
-_ACOES_COM_ALVO = frozenset(
+# Ações internas do NEXUS onde o alvo preserva maiúsculas/minúsculas.
+# "shell" preserva o restante da linha como comando do SO.
+_ACOES_CASE_SENSITIVE = frozenset(
     {
-        "abrir",
-        "history",
-        "historico",
         "shell",
     }
 )
@@ -70,22 +65,15 @@ class Parser:
         if not texto:
             return Comando(acao="vazio", bruto=bruto)
 
-        # Ação sempre em minúsculas; o alvo de "shell" preserva o original
-        # (após o primeiro token) para não alterar argumentos do SO.
         partes_originais = texto.split(maxsplit=1)
         acao = partes_originais[0].lower()
         alvo_original = partes_originais[1] if len(partes_originais) > 1 else None
 
-        if acao == "shell":
-            return Comando(acao="shell", alvo=alvo_original, bruto=bruto)
+        if acao in _ACOES_CASE_SENSITIVE:
+            return Comando(acao=acao, alvo=alvo_original, bruto=bruto)
 
         texto_lower = texto.lower()
         partes = texto_lower.split(maxsplit=1)
-        acao = partes[0]
         alvo = partes[1].strip() if len(partes) > 1 else None
 
-        if acao in _ACOES_COM_ALVO:
-            return Comando(acao=acao, alvo=alvo, bruto=bruto)
-
-        # Comandos internos de uma palavra (ou frases exatas já lowercased)
-        return Comando(acao=texto_lower, alvo=None, bruto=bruto)
+        return Comando(acao=acao, alvo=alvo, bruto=bruto)

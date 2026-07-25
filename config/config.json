@@ -7,5 +7,14 @@
     "webstorm": "webstorm",
     "downloads": "/home/tiago/Downloads",
     "documents": "/home/tiago/Documents",
-    "projects": "/home/tiago/Documents"
+    "projects": "/home/tiago/Documents",
+    "preferences": {
+        "language": "pt-BR",
+        "log_enabled": true,
+        "history_enabled": true,
+        "update_check": true
+    },
+    "modules": {
+        "plugins_enabled": true
+    }
 }
