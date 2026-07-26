@@ -32,11 +32,7 @@ class Comando:
 
 # Ações internas do NEXUS onde o alvo preserva maiúsculas/minúsculas.
 # "shell" preserva o restante da linha como comando do SO.
-_ACOES_CASE_SENSITIVE = frozenset(
-    {
-        "shell",
-    }
-)
+_ACOES_CASE_SENSITIVE = frozenset({"shell"})
 
 
 class Parser:

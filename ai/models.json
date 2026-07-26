@@ -1,0 +1,32 @@
+{
+    "models": [
+        {
+            "id": "qwen2.5-coder:3b",
+            "name": "Qwen Coder",
+            "role": "developer",
+            "description": "Programming, code analysis, script creation",
+            "capabilities": ["programming", "code", "script", "debug", "python", "bash"]
+        },
+        {
+            "id": "phi3:mini",
+            "name": "Phi Mini",
+            "role": "assistant",
+            "description": "Linux commands, quick tasks, general assistant",
+            "capabilities": ["system", "command", "shell", "quick", "general"]
+        },
+        {
+            "id": "gemma3",
+            "name": "Gemma",
+            "role": "analyst",
+            "description": "Planning, analysis, explanations, reasoning",
+            "capabilities": ["plan", "analyze", "explain", "reason", "strategy"]
+        }
+    ],
+    "default_model": "phi3:mini",
+    "settings": {
+        "ai_mode": "dynamic",
+        "ollama_host": "http://localhost:11434",
+        "timeout": 30,
+        "max_tokens": 2048
+    }
+}

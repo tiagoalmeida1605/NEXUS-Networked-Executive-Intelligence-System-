@@ -1,13 +1,16 @@
 {
-    "version": "0.3.1",
-    "label": "v0.3.1 Alpha",
-    "codename": "Developer Identity",
+    "version": "0.5.0",
+    "label": "v0.5 Alpha",
+    "codename": "AI Framework",
     "released": "2026-07-26",
     "changelog": [
-        "Identificação automática do operador via `getpass.getuser()`.",
-        "Novo módulo `core/system.py` para detecção do usuário e hostname.",
-        "Painéis de identidade agora exibem Operator e Host automaticamente.",
-        "Desenvolvedor oficial (tiago) identificado como 'Tiago/dev'.",
-        "Organização do projeto consolidada (modules/, plugins/README)."
+        "NEXUS AI Framework modular com suporte a Ollama.",
+        "Novo módulo ai/ com router, manager, ollama, memory e prompts.",
+        "Comandos: ai, ai status, models para interação com IA.",
+        "Roteador de intenção seleciona modelo conforme a tarefa.",
+        "Três modelos configurados: Qwen Coder, Phi Mini, Gemma.",
+        "Modo dynamic: carrega e libera modelo sob demanda.",
+        "Sistema resistente: NEXUS funciona sem Ollama disponível.",
+        "Memória persistente da IA em ~/.config/nexus/ai_memory.json."
     ]
 }

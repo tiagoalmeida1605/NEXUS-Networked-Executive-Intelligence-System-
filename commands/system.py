@@ -15,7 +15,15 @@ from typing import Optional
 import psutil
 
 from core import ui
+from core.config import carregar_versao
 from core.response import Resposta
+from core.system import (
+    get_architecture,
+    get_hostname,
+    get_kernel,
+    get_operator_name,
+    format_uptime,
+)
 
 
 def cpu() -> Resposta:
@@ -75,25 +83,26 @@ def disco() -> Resposta:
 
 
 def sistema() -> Resposta:
-    """Retorna um painel com informações gerais do sistema operacional."""
+    """Retorna um painel com informações completas do sistema."""
     from rich.console import Group
-
-    from core.config import carregar_versao
 
     distro = ui.detectar_distro()
     meta = carregar_versao()
 
     conteudo = [
-        distro,
-        f"Kernel {platform.release()}",
-        f"Python {sys.version.split()[0]}",
-        f"Arquitetura: {platform.machine()}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]OS:[/]        {distro}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Kernel:[/]    {get_kernel()}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Python:[/]    {sys.version.split()[0]}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Hostname:[/]  {get_hostname()}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Operator:[/]  {get_operator_name()}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Uptime:[/]    {format_uptime()}",
+        f"[bold {ui.COR_TEXTO_SECUNDARIO}]Arch:[/]      {get_architecture()}",
     ]
 
-    painel_host = ui.painel("Sistema", conteudo, cor=ui.COR_ACENTO)
+    painel_host = ui.painel("SISTEMA", conteudo, cor=ui.COR_ACENTO)
     identidade = ui.painel_identidade(
-        versao=str(meta.get("label", "v0.2.2.1 Alpha")),
-        codename=str(meta.get("codename", "Kernel Identity")),
+        versao=str(meta.get("label", "v0.4 Alpha")),
+        codename=str(meta.get("codename", "Interface")),
         online=True,
     )
     return Resposta(

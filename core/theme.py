@@ -17,18 +17,21 @@ from __future__ import annotations
 
 import json
 import platform
+import time
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from rich.align import Align
 from rich.box import ROUNDED
 from rich.console import Console, Group, RenderableType
+from rich.live import Live
 from rich.panel import Panel
 from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
 from core.system import get_hostname, get_operator_name
+from core.config import carregar_versao
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = PROJECT_ROOT / "assets"
@@ -71,7 +74,7 @@ _THEME_META: Dict[str, Any] = {
 
 
 def _ler_json(caminho: Path) -> Optional[Dict[str, Any]]:
-    """Lê um JSON de forma segura."""
+    """Le um JSON de forma segura."""
     try:
         with open(caminho, "r", encoding="utf-8") as arquivo:
             dados = json.load(arquivo)
@@ -84,7 +87,7 @@ def _carregar_paleta() -> Dict[str, str]:
     """
     Carrega a paleta do NEXUS Blue Theme.
 
-    Ordem: themes/nexus_blue.json → branding/colors.json → legado → default.
+    Ordem: themes/nexus_blue.json branding/colors.json legado default.
     """
     for caminho in (THEME_FILE, COLORS_FILE, _LEGACY_COLORS):
         dados = _ler_json(caminho)
@@ -122,8 +125,8 @@ COR_MUTED = _PALETTE["muted"]
 COR_ACENTO = COR_NEON
 
 PROMPT = (
-    f"[bold {COR_PRIMARIA}]NEXUS[/bold {COR_PRIMARIA}] "
-    f"[bold {COR_NEON}]❯[/bold {COR_NEON}] "
+    f"[bold {COR_PRIMARIA}]╭─ NEXUS[/bold {COR_PRIMARIA}]\n"
+    f"[bold {COR_NEON}]╰─▶[/bold {COR_NEON}] "
 )
 
 _CARACTERE_REGRA = "═"
@@ -168,12 +171,12 @@ def carregar_banner_ascii() -> str:
 
 
 def caminho_logo_png() -> Optional[Path]:
-    """Logo sem fundo — ícone / UI futura / mobile."""
+    """Logo sem fundo  icone / UI futura / mobile."""
     return _LOGO_PNG_PATH if _LOGO_PNG_PATH.is_file() else None
 
 
 def caminho_logo_com_fundo() -> Optional[Path]:
-    """Logo com fundo — README, docs e apresentações."""
+    """Logo com fundo  README, docs e apresentacoes."""
     return LOGO_BG_PNG_FILE if LOGO_BG_PNG_FILE.is_file() else None
 
 
@@ -183,7 +186,7 @@ def nome_tema() -> str:
 
 
 def paleta() -> Dict[str, str]:
-    """Cópia da paleta oficial carregada."""
+    """Copia da paleta oficial carregada."""
     return dict(_PALETTE)
 
 
@@ -193,7 +196,7 @@ def regra(estilo: Optional[str] = None) -> None:
 
 
 def render_logo_ascii(gradiente: bool = True) -> Group:
-    """Renderiza a logo ASCII (N) com gradiente neon → tech."""
+    """Renderiza a logo ASCII (N) com gradiente neon  tech."""
     linhas = carregar_logo_ascii().splitlines()
     cores = (COR_NEON, COR_PRIMARIA, COR_TECNOLOGICO)
     renderizaveis = []
@@ -287,13 +290,11 @@ def painel_identidade(
     """Painel oficial de identidade do NEXUS.
 
     Args:
-        versao: label da versão (ex.: "v0.3 Alpha").
-        codename: codename da versão (ex.: "Core Evolution").
-        usuario: nome do operador. Se omitido, detecta automaticamente
-                 via get_operator_name().
-        online: se True, exibe status ONLINE; caso contrário, OFFLINE.
-        hostname: hostname da máquina. Se omitido, detecta automaticamente
-                  via get_hostname().
+        versao: label da versao (ex.: "v0.4 Alpha").
+        codename: codename da versao (ex.: "Interface").
+        usuario: nome do operador. Se omitido, detecta automaticamente.
+        online: se True, exibe status ONLINE; caso contrario, OFFLINE.
+        hostname: hostname da maquina. Se omitido, detecta automaticamente.
     """
     if usuario is None:
         usuario = get_operator_name()
@@ -329,7 +330,7 @@ def painel_identidade(
 
 
 def cabecalho_ajuda(versao: str, codename: str) -> RenderableType:
-    """Cabeçalho com logo + identidade para a tela de ajuda."""
+    """Cabecalho com logo + identidade para a tela de ajuda."""
     return Group(
         render_logo_ascii(),
         Text(""),
@@ -343,12 +344,88 @@ def cabecalho_ajuda(versao: str, codename: str) -> RenderableType:
 
 
 def detectar_distro() -> str:
-    """Nome amigável do sistema operacional."""
+    """Nome amigavel do sistema operacional."""
     try:
         info = platform.freedesktop_os_release()
         return info.get("PRETTY_NAME", platform.system())
     except (AttributeError, OSError):
         return platform.system()
+
+
+def exibir_splash() -> None:
+    """
+    Exibe a splash screen com carregamento animado por modulos.
+
+    Mostra:
+        Initializing NEXUS...
+        - Core
+        - Commands
+        - Theme
+        - Configuration
+        - Plugins
+        Status: ONLINE
+    """
+    meta = carregar_versao()
+    label = str(meta.get("label", "v0.4 Alpha"))
+    codename_str = str(meta.get("codename", "Interface"))
+
+    modulos: List[tuple] = [
+        ("Core", COR_PRIMARIA),
+        ("Commands", COR_TECNOLOGICO),
+        ("Theme", COR_NEON),
+        ("Configuration", COR_PRIMARIA),
+        ("Plugins", COR_TECNOLOGICO),
+    ]
+
+    console.print()
+
+    # Banner ASCII
+    console.print(Align.center(render_banner_ascii()))
+    console.print()
+    console.print(
+        Align.center(
+            Text(
+                "Networked Executive Intelligence System",
+                style=COR_BRANCO,
+            )
+        )
+    )
+    console.print()
+    console.print(
+        Align.center(
+            Text(f"{label} · {codename_str}", style=COR_TEXTO_SECUNDARIO)
+        )
+    )
+    console.print()
+    regra()
+    console.print()
+
+    # Carregamento animado
+    linhas: List[str] = []
+    texto_inicial = Text("Initializing NEXUS...\n\n", style=f"bold {COR_PRIMARIA}")
+    with Live(
+        Align.center(texto_inicial),
+        console=console,
+        refresh_per_second=10,
+        transient=True,
+    ) as live:
+        for nome, cor in modulos:
+            time.sleep(0.2)
+            linhas.append(f"[bold {COR_SUCESSO}]✓[/bold {COR_SUCESSO}]  [{cor}]{nome}[/{cor}]")
+            render = Text("Initializing NEXUS...\n\n", style=f"bold {COR_PRIMARIA}")
+            render += Text("\n".join(linhas), style=COR_BRANCO)
+            live.update(Align.center(render))
+
+    console.print()
+    status_text = Text()
+    status_text.append("Status:  ", style=COR_TEXTO_SECUNDARIO)
+    status_text.append("ONLINE", style=f"bold {COR_NEON}")
+    console.print(Align.center(status_text))
+    console.print()
+    console.print(Align.center(Text("Welcome back.", style=COR_BRANCO)))
+    console.print()
+    regra()
+    console.print()
 
 
 def meta_tema() -> Dict[str, Any]:

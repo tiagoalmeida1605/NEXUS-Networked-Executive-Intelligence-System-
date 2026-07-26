@@ -10,6 +10,8 @@ Todo plugin precisa de:
 
 from __future__ import annotations
 
+from typing import Optional
+
 from core.response import Resposta
 
 PLUGIN_INFO = {
@@ -19,8 +21,12 @@ PLUGIN_INFO = {
 }
 
 
-def _ping() -> Resposta:
-    """Responde com um PONG para testar o sistema de plugins."""
+def _ping(alvo: Optional[str] = None) -> Resposta:
+    """Responde com um PONG para testar o sistema de plugins.
+
+    Args:
+        alvo: ignorado (compatibilidade com a API de plugins).
+    """
     return Resposta(sucesso=True, mensagem="NEXUS PONG ✓")
 
 

@@ -16,8 +16,8 @@
 ### Networked Executive Intelligence System
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-v0.3.1%20Alpha-00A8FF?style=for-the-badge&labelColor=001B44" />
-  <img alt="codename" src="https://img.shields.io/badge/codename-Developer%20Identity-00FFFF?style=for-the-badge&labelColor=001B44" />
+  <img alt="version" src="https://img.shields.io/badge/version-v0.4%20Alpha-00A8FF?style=for-the-badge&labelColor=001B44" />
+  <img alt="codename" src="https://img.shields.io/badge/codename-Interface-00FFFF?style=for-the-badge&labelColor=001B44" />
   <img alt="theme" src="https://img.shields.io/badge/theme-NEXUS%20Blue-0077FF?style=for-the-badge&labelColor=001B44" />
   <img alt="python" src="https://img.shields.io/badge/python-3.10+-0077FF?style=for-the-badge&logo=python&logoColor=E8F4FF&labelColor=001B44" />
   <img alt="license" src="https://img.shields.io/badge/license-MIT-E8F4FF?style=for-the-badge&labelColor=001B44" />
@@ -33,10 +33,10 @@
 ## Visão geral
 
 O **NEXUS** é um assistente de terminal para Linux Mint, escrito em **Python 3**.
-A versão **v0.3.1 Alpha — Developer Identity** representa uma atualização incremental focada na identificação automática do operador e na consolidação da arquitetura interna, sem alterar o comportamento principal do NEXUS.
+A versão **v0.4 Alpha — Interface** transforma o NEXUS em um terminal visualmente moderno, com splash animada, prompt redesenhado, novos comandos e um ecossistema de plugins expandido.
 
-> **Version:** `v0.3.1 Alpha` · **Codename:** `Developer Identity`  
-> *"Developer Identity active."*
+> **Version:** `v0.4 Alpha` · **Codename:** `Interface`  
+> *"Interface evolution active."*
 
 ---
 
@@ -56,17 +56,21 @@ A versão **v0.3.1 Alpha — Developer Identity** representa uma atualização i
 │          NEXUS                 │
 │ Networked Executive System     │
 ├────────────────────────────────┤
-│ Version: v0.3.1 Alpha          │
-│ Codename: Developer Identity   │
+│ Version: v0.4 Alpha            │
+│ Codename: Interface            │
 │ Operator: Tiago/dev            │
 │ Host: tiago-mint-linux         │
 │ Status: ONLINE                 │
 ╰────────────────────────────────╯
 
-NEXUS ❯ doctor
-NEXUS ❯ about
-NEXUS ❯ help
-NEXUS ❯ version
+╭─ NEXUS
+╰─▶ about
+╭─ NEXUS
+╰─▶ doctor
+╭─ NEXUS
+╰─▶ calc (15*8)/2
+╭─ NEXUS
+╰─▶ todo add Estudar NEXUS
 ```
 
 ---
@@ -215,6 +219,7 @@ NEXUS/
 | v0.2.2.1 Alpha | Kernel Identity | ✔ |
 | **v0.3 Alpha** | **Core Evolution** | ✔ |
 | **v0.3.1 Alpha** | **Developer Identity** | ✔ |
+| **v0.4 Alpha** | **Interface** | ✔ |
 | v0.5 Beta | Core | ◻ |
 | v1.0 Stable | Genesis | ◻ |
 
@@ -232,6 +237,7 @@ NEXUS/
 | **v0.2.2.1 Alpha** | Kernel Identity | Revisão da identidade e branding |
 | **v0.3 Alpha** | Core Evolution | Evolução do núcleo e preparação arquitetural |
 | **v0.3.1 Alpha** | Developer Identity | Identificação automática do operador e consolidação |
+| **v0.4 Alpha** | Interface | Interface moderna, splash animada, novos comandos e plugins |
 
 Detalhes em [`CHANGELOG.md`](./CHANGELOG.md).
 
@@ -258,5 +264,5 @@ MIT
 <p align="center">
   <img src="assets/branding/logo_with_background.png" alt="NEXUS" width="64" /><br/>
   <code>#00FFFF</code> · <code>#00A8FF</code> · <code>#001B44</code><br/>
-  <b>NEXUS</b> — Developer Identity active.
+  <b>NEXUS</b> — Interface evolution active.
 </p>

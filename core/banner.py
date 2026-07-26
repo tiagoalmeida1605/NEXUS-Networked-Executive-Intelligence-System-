@@ -1,86 +1,24 @@
 """
 core/banner.py
 
-Experiência de abertura do NEXUS (v0.2.2.1 — Kernel Identity).
+Experiência de abertura do NEXUS.
 
-Fluxo:
-    1. Banner ASCII (letreiro NEXUS)
-    2. Painel de identidade oficial
+Delega a exibição do splash animado para core/theme.py.exibir_splash().
+Mantido como módulo separado para preservar a arquitetura existente.
 """
 
 from __future__ import annotations
 
-import time
 from typing import Any, Dict
 
-from rich.align import Align
-from rich.console import Console
-from rich.text import Text
-
 from core import theme
-from core.config import carregar_versao
-
-console = Console()
 
 
 def exibir_banner(config: Dict[str, Any]) -> None:
     """
-    Exibe o banner ASCII e o painel de identidade.
+    Exibe a splash screen completa com animação de módulos.
 
     Args:
-        config: configuração do usuário (saudação / nome).
+        config: configuração do usuário (mantido por compatibilidade).
     """
-    meta = carregar_versao()
-    versao = str(meta.get("label", "v0.2.2.1 Alpha"))
-    codename = str(meta.get("codename", "Kernel Identity"))
-
-    console.print()
-    with console.status(
-        Text("Carregando NEXUS Identity...", style=f"bold {theme.COR_PRIMARIA}"),
-        spinner="dots12",
-        spinner_style=theme.COR_NEON,
-    ):
-        time.sleep(0.35)
-
-    # 1) Banner ASCII completo
-    console.print(theme.render_banner_ascii())
-    console.print()
-    console.print(
-        Align.center(
-            Text(
-                "Networked Executive Intelligence System",
-                style=theme.COR_BRANCO,
-            )
-        )
-    )
-    console.print()
-    theme.regra()
-    console.print()
-
-    # 2) Painel de identidade (operador detectado automaticamente)
-    console.print(
-        Align.center(
-            theme.painel_identidade(
-                versao=versao,
-                codename=codename,
-                online=True,
-            )
-        )
-    )
-    console.print()
-    console.print(
-        Align.center(
-            Text("Identity module loaded.", style=f"bold {theme.COR_NEON}")
-        )
-    )
-    console.print(
-        Align.center(
-            Text(
-                'Digite "help" ou "about" para saber mais.',
-                style=theme.COR_TEXTO_SECUNDARIO,
-            )
-        )
-    )
-    console.print()
-    theme.regra()
-    console.print()
+    theme.exibir_splash()

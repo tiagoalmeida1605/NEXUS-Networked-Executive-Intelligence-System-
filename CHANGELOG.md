@@ -7,6 +7,53 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.5.0] — 2026-07-26 — AI Framework
+
+### Adicionado
+- NEXUS AI Framework: módulo `ai/` com arquitetura modular completa
+- `ai/ollama.py`: integração com API local do Ollama (detecção, listagem, prompts)
+- `ai/router.py`: roteador de intenção por palavras-chave (developer/assistant/analyst)
+- `ai/manager.py`: gerenciador de ciclo de vida com modo dynamic (carrega/libera)
+- `ai/memory.py`: memória persistente em `~/.config/nexus/ai_memory.json`
+- `ai/prompts/system.py`: prompts de sistema específicos para cada role
+- `ai/models.json`: definição dos 3 modelos (Qwen Coder, Phi Mini, Gemma)
+- Comandos: `ai` (modo conversa), `ai status` (status do sistema), `models` (lista modelos)
+
+### Alterado
+- `core/executor.py`: registrados comandos `ai` (com suporte a alvo) e `models`
+- `commands/ai_cmd.py`: interface CLI para IA com detecção de disponibilidade
+- `version.json` atualizado para v0.5 com codename AI Framework
+- `CHANGELOG.md` e README atualizados
+
+### Segurança
+- Sistema resistente: NEXUS funciona normalmente sem Ollama
+- IA atua apenas como módulo adicional, não substitui o Core
+- Ações requerem confirmação quando necessário
+
+---
+
+## [0.4.0] — 2026-07-26 — Interface
+
+### Adicionado
+- Splash screen animada com carregamento por módulos (✓ Core, Commands, Theme, Config, Plugins)
+- Prompt visual redesenhado: `╭─ NEXUS` / `╰─▶`
+- Comandos: `banner`, `credits`, `motd`, `theme`, `theme list`, `reload`, `cls`
+- Sistema de informação completo: CPU, RAM, Disco, Kernel, Python, Hostname, Operador, Uptime, Arch
+- Plugin loader expandido: suporte a plugins em subdiretórios com `__init__.py`
+- Plugins: calculator (`calc`), clock (`clock`), calendar (`calendar`), password (`password`), notes (`note add/list/remove`), todo (`todo add/list/done/remove`)
+
+### Alterado
+- `core/theme.py`: splash animado via `Live`, prompt moderno, novos helpers visuais
+- `core/banner.py`: simplificado, delega para `theme.exibir_splash()`
+- `core/system.py`: adicionado `get_uptime()`, `format_uptime()`, `get_architecture()`, `get_kernel()`
+- `commands/system.py`: `sistema` agora exibe uptime, hostname, operador, arch
+- `core/plugin_loader.py`: suporta arquivos `.py` e subdiretórios com `__init__.py`
+- `core/executor.py`: novos comandos registrados (banner, credits, motd, theme, reload, cls)
+- `core/parser.py`: aliases de comandos mantidos
+- Todos os painéis: bordas consistentes, ícones discretos, alinhamento
+
+---
+
 ## [0.3.1] — 2026-07-26 — Developer Identity
 
 ### Adicionado
