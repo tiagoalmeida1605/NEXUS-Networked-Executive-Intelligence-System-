@@ -1,13 +1,13 @@
 {
-    "version": "0.3.0",
-    "label": "v0.3 Alpha",
-    "codename": "Core Expansion",
-    "released": "2026-07-25",
+    "version": "0.3.1",
+    "label": "v0.3.1 Alpha",
+    "codename": "Developer Identity",
+    "released": "2026-07-26",
     "changelog": [
-        "Nova arquitetura modular com sistema de plugins dinâmicos.",
-        "Novo comando `doctor` para diagnóstico completo do sistema.",
-        "Parser aprimorado para capturar alvos em comandos genéricos.",
-        "Sistema de log robusto com rotação automática de 1 MB.",
-        "Configuração estruturada com seções de preferências e módulos."
+        "Identificação automática do operador via `getpass.getuser()`.",
+        "Novo módulo `core/system.py` para detecção do usuário e hostname.",
+        "Painéis de identidade agora exibem Operator e Host automaticamente.",
+        "Desenvolvedor oficial (tiago) identificado como 'Tiago/dev'.",
+        "Organização do projeto consolidada (modules/, plugins/README)."
     ]
 }

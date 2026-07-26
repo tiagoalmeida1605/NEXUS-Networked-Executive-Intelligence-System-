@@ -16,8 +16,8 @@
 ### Networked Executive Intelligence System
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-v0.3%20Alpha-00A8FF?style=for-the-badge&labelColor=001B44" />
-  <img alt="codename" src="https://img.shields.io/badge/codename-Core%20Evolution-00FFFF?style=for-the-badge&labelColor=001B44" />
+  <img alt="version" src="https://img.shields.io/badge/version-v0.3.1%20Alpha-00A8FF?style=for-the-badge&labelColor=001B44" />
+  <img alt="codename" src="https://img.shields.io/badge/codename-Developer%20Identity-00FFFF?style=for-the-badge&labelColor=001B44" />
   <img alt="theme" src="https://img.shields.io/badge/theme-NEXUS%20Blue-0077FF?style=for-the-badge&labelColor=001B44" />
   <img alt="python" src="https://img.shields.io/badge/python-3.10+-0077FF?style=for-the-badge&logo=python&logoColor=E8F4FF&labelColor=001B44" />
   <img alt="license" src="https://img.shields.io/badge/license-MIT-E8F4FF?style=for-the-badge&labelColor=001B44" />
@@ -33,11 +33,10 @@
 ## Visão geral
 
 O **NEXUS** é um assistente de terminal para Linux Mint, escrito em **Python 3**.
-A versão **v0.3 Alpha — Core Evolution** representa uma evolução significativa do núcleo do sistema:
-melhorias arquiteturais, organização modular, preparação para o sistema de plugins, aprimoramentos de comandos e uma base mais profissional pronta para futuras integrações inteligentes.
+A versão **v0.3.1 Alpha — Developer Identity** representa uma atualização incremental focada na identificação automática do operador e na consolidação da arquitetura interna, sem alterar o comportamento principal do NEXUS.
 
-> **Version:** `v0.3 Alpha` · **Codename:** `Core Evolution`  
-> *"Core evolution active."*
+> **Version:** `v0.3.1 Alpha` · **Codename:** `Developer Identity`  
+> *"Developer Identity active."*
 
 ---
 
@@ -53,14 +52,16 @@ melhorias arquiteturais, organização modular, preparação para o sistema de p
 
      Networked Executive Intelligence System
 
-╭────────────────────────────╮
-│          NEXUS             │
-│ Networked Executive System │
-├────────────────────────────┤
-│ Version: v0.3 Alpha        │
-│ Codename: Core Evolution   │
-│ Status: ONLINE             │
-╰────────────────────────────╯
+╭────────────────────────────────╮
+│          NEXUS                 │
+│ Networked Executive System     │
+├────────────────────────────────┤
+│ Version: v0.3.1 Alpha          │
+│ Codename: Developer Identity   │
+│ Operator: Tiago/dev            │
+│ Host: tiago-mint-linux         │
+│ Status: ONLINE                 │
+╰────────────────────────────────╯
 
 NEXUS ❯ doctor
 NEXUS ❯ about
@@ -115,6 +116,7 @@ Tema carregado de `assets/themes/nexus_blue.json` via `core/theme.py`.
 | Identidade visual | Logo, tema NEXUS Blue, painéis de marca |
 | `about` | Tela oficial de identidade + módulos |
 | `doctor` | Diagnóstico completo de saúde do sistema |
+| Identificação do operador | Detecção automática via `getpass.getuser()` |
 | Core modular | Arquitetura desacoplada e evolutiva |
 | Sistema de plugins | Suporte e carregamento dinâmico de extensões |
 | Gestão de config & logs | Rotação automática de logs (1 MB) e merge de preferências |
@@ -189,6 +191,7 @@ NEXUS/
 │   ├── banner.py         # Boot Identity
 │   ├── plugin_loader.py  # Carregador de plugins
 │   ├── logger.py         # Logs com rotação
+│   ├── system.py         # Identificação do operador
 │   └── …
 ├── commands/
 │   ├── about_cmd.py
@@ -211,6 +214,7 @@ NEXUS/
 | v0.2.2 Alpha | Kernel Identity | ✔ |
 | v0.2.2.1 Alpha | Kernel Identity | ✔ |
 | **v0.3 Alpha** | **Core Evolution** | ✔ |
+| **v0.3.1 Alpha** | **Developer Identity** | ✔ |
 | v0.5 Beta | Core | ◻ |
 | v1.0 Stable | Genesis | ◻ |
 
@@ -227,6 +231,7 @@ NEXUS/
 | **v0.2.2 Alpha** | Kernel Identity | Primeira identidade visual oficial |
 | **v0.2.2.1 Alpha** | Kernel Identity | Revisão da identidade e branding |
 | **v0.3 Alpha** | Core Evolution | Evolução do núcleo e preparação arquitetural |
+| **v0.3.1 Alpha** | Developer Identity | Identificação automática do operador e consolidação |
 
 Detalhes em [`CHANGELOG.md`](./CHANGELOG.md).
 
@@ -253,5 +258,5 @@ MIT
 <p align="center">
   <img src="assets/branding/logo_with_background.png" alt="NEXUS" width="64" /><br/>
   <code>#00FFFF</code> · <code>#00A8FF</code> · <code>#001B44</code><br/>
-  <b>NEXUS</b> — Core evolution active.
+  <b>NEXUS</b> — Developer Identity active.
 </p>

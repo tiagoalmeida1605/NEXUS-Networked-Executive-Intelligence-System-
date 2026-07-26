@@ -17,27 +17,9 @@ Todo plugin precisa definir as seguintes propriedades:
 
 ### Código de Exemplo
 
-```python
-"""
-plugins/exemplo_plugin.py
-"""
-from __future__ import annotations
-from core.response import Resposta
-
-PLUGIN_INFO = {
-    "nome": "Exemplo",
-    "versao": "1.0",
-    "descricao": "Plugin de demonstração do NEXUS.",
-}
-
-def _ping() -> Resposta:
-    """Responde com um PONG para testar o sistema de plugins."""
-    return Resposta(sucesso=True, mensagem="NEXUS PONG ✓")
-
-def registrar(executor) -> None:
-    """Registra os comandos deste plugin no executor."""
-    executor.registrar_plugin("ping", _ping, "Testa o sistema de plugins (PONG)")
-```
+O arquivo [`plugins/exemplo_plugin.py`](exemplo_plugin.py) contém a implementação
+completa e comentada de um plugin funcional — consulte-o como modelo para criar
+seus próprios plugins.
 
 ## Como Instalar e Remover Plugins
 

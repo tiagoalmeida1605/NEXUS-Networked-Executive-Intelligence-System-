@@ -28,6 +28,8 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
+from core.system import get_hostname, get_operator_name
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ASSETS_DIR = PROJECT_ROOT / "assets"
 BRANDING_DIR = ASSETS_DIR / "branding"
@@ -280,8 +282,24 @@ def painel_identidade(
     codename: str,
     usuario: Optional[str] = None,
     online: bool = True,
+    hostname: Optional[str] = None,
 ) -> Panel:
-    """Painel oficial de identidade do NEXUS."""
+    """Painel oficial de identidade do NEXUS.
+
+    Args:
+        versao: label da versão (ex.: "v0.3 Alpha").
+        codename: codename da versão (ex.: "Core Evolution").
+        usuario: nome do operador. Se omitido, detecta automaticamente
+                 via get_operator_name().
+        online: se True, exibe status ONLINE; caso contrário, OFFLINE.
+        hostname: hostname da máquina. Se omitido, detecta automaticamente
+                  via get_hostname().
+    """
+    if usuario is None:
+        usuario = get_operator_name()
+    if hostname is None:
+        hostname = get_hostname()
+
     cabecalho = Text(justify="center")
     cabecalho.append("NEXUS\n", style=f"bold {COR_PRIMARIA}")
     cabecalho.append("Networked Executive System\n", style=COR_BRANCO)
@@ -296,9 +314,10 @@ def painel_identidade(
         "ONLINE\n" if online else "OFFLINE\n",
         style=f"bold {COR_NEON if online else COR_ERRO}",
     )
-    if usuario:
-        corpo.append("User:     ", style=COR_TEXTO_SECUNDARIO)
-        corpo.append(f"{usuario}\n", style=f"bold {COR_BRANCO}")
+    corpo.append("Operator: ", style=COR_TEXTO_SECUNDARIO)
+    corpo.append(f"{usuario}\n", style=f"bold {COR_BRANCO}")
+    corpo.append("Host:     ", style=COR_TEXTO_SECUNDARIO)
+    corpo.append(f"{hostname}\n", style=f"bold {COR_BRANCO}")
 
     return Panel(
         Group(cabecalho, Rule(style=COR_TECNOLOGICO), corpo),

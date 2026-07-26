@@ -15,6 +15,7 @@ from rich.text import Text
 from core import theme
 from core.config import carregar_versao
 from core.response import Resposta
+from core.system import get_hostname, get_operator_name
 
 
 def about() -> Resposta:
@@ -50,6 +51,9 @@ def about() -> Resposta:
             "",
             f"[{theme.COR_TEXTO_SECUNDARIO}]Version:[/]  [bold {theme.COR_NEON}]{label}[/]",
             f"[{theme.COR_TEXTO_SECUNDARIO}]Codename:[/] [bold {theme.COR_PRIMARIA}]{codename}[/]",
+            "",
+            f"[{theme.COR_TEXTO_SECUNDARIO}]Operator:[/] [bold {theme.COR_BRANCO}]{get_operator_name()}[/]",
+            f"[{theme.COR_TEXTO_SECUNDARIO}]Host:[/]     [bold {theme.COR_BRANCO}]{get_hostname()}[/]",
             "",
             f"[{theme.COR_TEXTO_SECUNDARIO}]Descrição:[/]",
             f"[{theme.COR_BRANCO}]Networked Executive Intelligence System[/]",

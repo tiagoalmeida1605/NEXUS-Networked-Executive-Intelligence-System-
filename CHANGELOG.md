@@ -7,6 +7,23 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.3.1] — 2026-07-26 — Developer Identity
+
+### Adicionado
+- Sistema de identificação automática do operador via `getpass.getuser()`
+- Novo módulo `core/system.py` com `get_system_user()`, `get_operator_name()`, `get_hostname()`
+- Operador exibido em painéis de identidade (banner, about, version, sistema)
+- Identificador especial `Tiago/dev` para o usuário oficial (tiago)
+
+### Alterado
+- `core/theme.py`: `painel_identidade()` agora mostra Operator e Host automaticamente
+- `core/banner.py`: identificação do operador substitui leitura estática do config
+- `commands/about_cmd.py`: painel ABOUT exibe Operator e Host
+- `version.json` atualizado para v0.3.1 com codename Developer Identity
+- `CHANGELOG.md` e README atualizados para refletir nova versão
+
+---
+
 ## [0.3.0] — 2026-07-25 — Core Evolution
 
 ### Adicionado

@@ -30,7 +30,6 @@ def exibir_banner(config: Dict[str, Any]) -> None:
     Args:
         config: configuração do usuário (saudação / nome).
     """
-    usuario = str(config.get("user", "usuário"))
     meta = carregar_versao()
     versao = str(meta.get("label", "v0.2.2.1 Alpha"))
     codename = str(meta.get("codename", "Kernel Identity"))
@@ -58,13 +57,12 @@ def exibir_banner(config: Dict[str, Any]) -> None:
     theme.regra()
     console.print()
 
-    # 2) Painel de identidade
+    # 2) Painel de identidade (operador detectado automaticamente)
     console.print(
         Align.center(
             theme.painel_identidade(
                 versao=versao,
                 codename=codename,
-                usuario=usuario,
                 online=True,
             )
         )
