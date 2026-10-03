@@ -7,6 +7,20 @@ e este projeto adere a [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.4.1] — 2026-07-27 — Interface Hotfix
+
+### Corrigido
+- Comando `ai` agora inicia um loop interativo de chat em vez de apenas exibir
+  a mensagem de boas-vindas e retornar imediatamente ao CLI principal.
+- O usuário pode digitar mensagens livremente e receber respostas da IA.
+- Adicionado tratamento de `KeyboardInterrupt` e `EOFError` no modo AI.
+- Modo AI encerra corretamente com `sair`, `exit` ou `quit`.
+- Se nenhum modelo estiver configurado, responde com mensagem amigável
+  sem falhar ou encerrar o chat.
+- Nenhuma alteração na arquitetura, identidade visual, comandos ou plugins.
+
+---
+
 ## [0.5.0] — 2026-07-26 — AI Framework
 
 ### Adicionado

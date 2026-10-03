@@ -1,7 +1,7 @@
 """
 commands/ai_cmd.py
 
-Comandos de Inteligência Artificial do NEXUS v0.5.
+Comandos de Inteligência Artificial do NEXUS v0.4.1.
 
 Comandos:
     ai              — Abre modo de conversa com IA
@@ -25,7 +25,74 @@ from ai.ollama import (
     listar_modelos_ollama,
     verificar_ollama,
 )
-from ai.router import detectar_intencao, role_para_descricao
+from core.theme import COR_NEON, COR_BRANCO, COR_TEXTO_SECUNDARIO
+from core.theme import console as _console
+
+COMANDOS_SAIDA = frozenset({"sair", "exit", "quit"})
+
+
+def _chat_cabecalho(modelo: str) -> None:
+    """Exibe o cabeçalho do chat AI."""
+    _console.print(f"[bold {COR_NEON}]✔ NEXUS AI ONLINE[/bold {COR_NEON}]")
+    _console.print()
+    _console.print(f"[{COR_TEXTO_SECUNDARIO}]Model:[/] {modelo}")
+    _console.print()
+    _console.print(f"[{COR_BRANCO}]Digite sua mensagem (ou 'sair' para encerrar):[/{COR_BRANCO}]")
+    _console.print()
+
+
+def _chat_loop() -> None:
+    """
+    Loop interativo do chat de IA.
+
+    Permite que o usuário digite mensagens continuamente até digitar
+    'sair', 'exit' ou 'quit'. A função lida com interrupções e erros
+    sem nunca derrubar o NEXUS.
+    """
+    while True:
+        try:
+            entrada = _console.input(f"[bold {COR_NEON}]>[/bold {COR_NEON}] ")
+        except (KeyboardInterrupt, EOFError):
+            _console.print(f"\n   [{COR_BRANCO}]Saindo do modo AI...[/{COR_BRANCO}]")
+            _console.print()
+            return
+
+        texto = entrada.strip()
+
+        if not texto:
+            continue
+
+        if texto.lower() in COMANDOS_SAIDA:
+            _console.print(f"   [{COR_BRANCO}]Saindo do modo AI...[/{COR_BRANCO}]")
+            _console.print()
+            return
+
+        _console.print(f"[{COR_TEXTO_SECUNDARIO}]Usuário:[/{COR_TEXTO_SECUNDARIO}]")
+        _console.print(f"{texto}")
+        _console.print()
+
+        try:
+            if not verificar_ollama() or not listar_modelos_ollama():
+                _console.print(f"[{COR_NEON}]NEXUS:[/{COR_NEON}]")
+                _console.print(f"[{COR_BRANCO}]Nenhum modelo configurado.[/{COR_BRANCO}]")
+                _console.print()
+                continue
+
+            resultado = processar(texto)
+
+            if resultado.get("sucesso"):
+                resposta = resultado.get("resposta", "")
+                _console.print(f"[{COR_NEON}]NEXUS:[/{COR_NEON}]")
+                _console.print(f"[{COR_BRANCO}]{resposta}[/{COR_BRANCO}]")
+            else:
+                mensagem = resultado.get("resposta", "Nenhum modelo configurado.")
+                _console.print(f"[{COR_NEON}]NEXUS:[/{COR_NEON}]")
+                _console.print(f"[{COR_BRANCO}]{mensagem}[/{COR_BRANCO}]")
+        except Exception:  # noqa: BLE001
+            _console.print(f"[{COR_NEON}]NEXUS:[/{COR_NEON}]")
+            _console.print(f"[{COR_BRANCO}]Nenhum modelo configurado.[/{COR_BRANCO}]")
+
+        _console.print()
 
 
 def ai_mode(alvo: Optional[str] = None) -> Resposta:
@@ -33,38 +100,16 @@ def ai_mode(alvo: Optional[str] = None) -> Resposta:
     if alvo and alvo.strip().lower() == "status":
         return ai_status()
 
-    if not verificar_ollama():
-        return Resposta(
-            sucesso=False,
-            mensagem=(
-                "NEXUS AI\n\n"
-                "Ollama não encontrado.\n"
-                "O sistema continuará funcionando sem inteligência artificial."
-            ),
-        )
+    if verificar_ollama() and listar_modelos_ollama():
+        modelo = obter_modelo_ativo()
+        nome_modelo = modelo["name"] if modelo else "Nenhum"
+    else:
+        nome_modelo = "Nenhum"
 
-    if not listar_modelos_ollama():
-        return Resposta(
-            sucesso=False,
-            mensagem=(
-                "NEXUS AI\n\n"
-                "Nenhum modelo instalado.\n"
-                "Instale um modelo com: ollama pull <modelo>"
-            ),
-        )
+    _chat_cabecalho(nome_modelo)
+    _chat_loop()
 
-    modelo = obter_modelo_ativo()
-    nome_modelo = modelo["name"] if modelo else "Nenhum"
-
-    return Resposta(
-        sucesso=True,
-        mensagem=(
-            f"NEXUS AI ONLINE\n\n"
-            f"Model: {nome_modelo}\n\n"
-            "Digite sua mensagem (ou 'sair' para encerrar):\n"
-            "> "
-        ),
-    )
+    return Resposta(sucesso=True, mensagem="Modo AI encerrado.")
 
 
 def ai_status() -> Resposta:
